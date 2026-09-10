@@ -1,5 +1,7 @@
 # 2026-09-10 - Project Setup
 
+> **Superseded** by [`2026-09-10-pipeline-rewrite.md`](2026-09-10-pipeline-rewrite.md): the "build by hand in Sheets, repo just holds data" premise below did not hold — see that entry for why and what replaced it.
+
 ## The "Why" (Design Decisions)
 
 **Repo holds data + notes, not the live model.** The model itself is built by hand in Google Sheets — that's deliberate: the point of this project is to internalize how the three statements link together, and typing every formula yourself (rather than generating it) is where that understanding actually forms. This repo's job is just to version the source data and capture the reasoning behind modeling choices as they're made.

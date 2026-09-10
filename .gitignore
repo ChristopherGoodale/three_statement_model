@@ -1,3 +1,19 @@
 ~$*.xlsx
 Thumbs.db
 .DS_Store
+
+# site3sm pipeline
+.env
+venv/
+__pycache__/
+*.egg-info/
+data/raw/*
+data/staging/*
+data/curated/*
+!data/raw/.gitkeep
+!data/staging/.gitkeep
+!data/curated/.gitkeep
+runs/*
+!runs/.gitkeep
+reports/*
+!reports/.gitkeep

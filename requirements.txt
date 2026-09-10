@@ -1,0 +1,9 @@
+requests
+pandas
+pyarrow
+pyyaml
+pydantic>=2
+gspread
+google-auth
+python-dotenv
+pytest
