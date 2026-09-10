@@ -1,0 +1,1962 @@
+- id: IS_NET_SALES
+  tab: Hist_IS
+  order: 100
+  label: Net sales
+  concepts:
+  - us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: IS_COST_OF_GOODS_SOLD
+  tab: Hist_IS
+  order: 110
+  label: Cost of goods sold
+  concepts:
+  - us-gaap:CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: IS_GROSS_PROFIT
+  tab: Hist_IS
+  order: 120
+  label: Gross profit
+  concepts:
+  - us-gaap:GrossProfit
+  period_type: duration
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{IS_NET_SALES} - {IS_COST_OF_GOODS_SOLD}'
+  reported_concepts:
+  - us-gaap:GrossProfit
+- id: IS_SELLING_GENERAL_AND_ADMINISTRATIVE_EXPENSES
+  tab: Hist_IS
+  order: 130
+  label: Selling, general and administrative expenses
+  concepts:
+  - us-gaap:SellingGeneralAndAdministrativeExpense
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: IS_OTHER_INCOME
+  tab: Hist_IS
+  order: 140
+  label: Other income
+  concepts:
+  - us-gaap:OtherOperatingIncomeExpenseNet
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: IS_OPERATING_INCOME
+  tab: Hist_IS
+  order: 150
+  label: Operating income
+  concepts:
+  - us-gaap:OperatingIncomeLoss
+  period_type: duration
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{IS_GROSS_PROFIT} - {IS_SELLING_GENERAL_AND_ADMINISTRATIVE_EXPENSES} + {IS_OTHER_INCOME}'
+  reported_concepts:
+  - us-gaap:OperatingIncomeLoss
+- id: IS_INTEREST_AND_OTHER_NON_OPERATING_EXPENSES_NET
+  tab: Hist_IS
+  order: 160
+  label: Interest and other non-operating expenses, net
+  concepts:
+  - us-gaap:InterestExpenseNonoperating
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: IS_INCOME_BEFORE_TAXES
+  tab: Hist_IS
+  order: 170
+  label: Income before taxes
+  concepts:
+  - us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest
+  period_type: duration
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{IS_OPERATING_INCOME} - {IS_INTEREST_AND_OTHER_NON_OPERATING_EXPENSES_NET}'
+  reported_concepts:
+  - us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest
+- id: IS_INCOME_TAX_EXPENSE
+  tab: Hist_IS
+  order: 180
+  label: Income tax expense
+  concepts:
+  - us-gaap:IncomeTaxExpenseBenefit
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: IS_NET_INCOME
+  tab: Hist_IS
+  order: 190
+  label: Net income
+  concepts:
+  - us-gaap:ProfitLoss
+  period_type: duration
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{IS_INCOME_BEFORE_TAXES} - {IS_INCOME_TAX_EXPENSE}'
+  reported_concepts:
+  - us-gaap:ProfitLoss
+- id: IS_NET_INCOME_ATTRIBUTABLE_TO_NON_CONTROLLING_INTEREST
+  tab: Hist_IS
+  order: 200
+  label: Net income attributable to non-controlling interest
+  concepts:
+  - us-gaap:NetIncomeLossAttributableToNoncontrollingInterest
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: IS_ADJUSTMENT_OF_NON_CONTROLLING_INTEREST_TO_REDEMPTION_VALUE
+  tab: Hist_IS
+  order: 210
+  label: Adjustment of non-controlling interest to redemption value
+  concepts:
+  - us-gaap:TemporaryEquityAccretionToRedemptionValueAdjustment
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: IS_NET_INCOME_ATTRIBUTABLE_TO_SITEONE
+  tab: Hist_IS
+  order: 220
+  label: Net income attributable to SiteOne
+  concepts:
+  - us-gaap:NetIncomeLossAvailableToCommonStockholdersBasic
+  period_type: duration
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{IS_NET_INCOME} - {IS_NET_INCOME_ATTRIBUTABLE_TO_NON_CONTROLLING_INTEREST} - {IS_ADJUSTMENT_OF_NON_CONTROLLING_INTEREST_TO_REDEMPTION_VALUE}'
+  reported_concepts:
+  - us-gaap:NetIncomeLossAvailableToCommonStockholdersBasic
+- id: HDR_IS_NET_INCOME_PER_COMMON_SHARE
+  tab: Hist_IS
+  order: 230
+  label: 'Net income per common share:'
+  kind: header
+  status: proposed
+- id: IS_BASIC_IN_DOLLARS_PER_SHARE
+  tab: Hist_IS
+  order: 240
+  label: Basic (in dollars per share)
+  concepts:
+  - us-gaap:EarningsPerShareBasic
+  period_type: duration
+  unit: USD/shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: IS_DILUTED_IN_DOLLARS_PER_SHARE
+  tab: Hist_IS
+  order: 250
+  label: Diluted (in dollars per share)
+  concepts:
+  - us-gaap:EarningsPerShareDiluted
+  period_type: duration
+  unit: USD/shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: HDR_IS_WEIGHTED_AVERAGE_NUMBER_OF_COMMON_SHARES_OUTSTANDING
+  tab: Hist_IS
+  order: 260
+  label: 'Weighted average number of common shares outstanding:'
+  kind: header
+  status: proposed
+- id: IS_BASIC_IN_SHARES
+  tab: Hist_IS
+  order: 270
+  label: Basic (in shares)
+  concepts:
+  - us-gaap:WeightedAverageNumberOfSharesOutstandingBasic
+  period_type: duration
+  unit: shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: IS_DILUTED_IN_SHARES
+  tab: Hist_IS
+  order: 280
+  label: Diluted (in shares)
+  concepts:
+  - us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding
+  period_type: duration
+  unit: shares
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{IS_BASIC_IN_SHARES}'
+  reported_concepts:
+  - us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding
+- id: HDR_BS_ASSETS
+  tab: Hist_BS
+  order: 100
+  label: Assets
+  kind: header
+  status: proposed
+- id: HDR_BS_CURRENT_ASSETS
+  tab: Hist_BS
+  order: 110
+  label: 'Current assets:'
+  kind: header
+  status: proposed
+- id: BS_CASH_AND_CASH_EQUIVALENTS
+  tab: Hist_BS
+  order: 120
+  label: Cash and cash equivalents
+  concepts:
+  - us-gaap:CashAndCashEquivalentsAtCarryingValue
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_ACCOUNTS_RECEIVABLE_NET_OF_ALLOWANCE_FOR_DOUBTFUL_ACCOUNTS_O
+  tab: Hist_BS
+  order: 130
+  label: Accounts receivable, net of allowance for doubtful accounts of $33.3 and $26.9, respectively
+  concepts:
+  - us-gaap:AccountsReceivableNetCurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_INVENTORY_NET
+  tab: Hist_BS
+  order: 140
+  label: Inventory, net
+  concepts:
+  - us-gaap:InventoryNet
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_INCOME_TAX_RECEIVABLE
+  tab: Hist_BS
+  order: 150
+  label: Income tax receivable
+  concepts:
+  - us-gaap:IncomeTaxesReceivable
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_PREPAID_EXPENSES_AND_OTHER_CURRENT_ASSETS
+  tab: Hist_BS
+  order: 160
+  label: Prepaid expenses and other current assets
+  concepts:
+  - us-gaap:PrepaidExpenseAndOtherAssetsCurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_TOTAL_CURRENT_ASSETS
+  tab: Hist_BS
+  order: 170
+  label: Total current assets
+  concepts:
+  - us-gaap:AssetsCurrent
+  period_type: instant
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{BS_CASH_AND_CASH_EQUIVALENTS} + {BS_ACCOUNTS_RECEIVABLE_NET_OF_ALLOWANCE_FOR_DOUBTFUL_ACCOUNTS_O}
+    + {BS_INVENTORY_NET} + {BS_INCOME_TAX_RECEIVABLE} + {BS_PREPAID_EXPENSES_AND_OTHER_CURRENT_ASSETS}'
+  reported_concepts:
+  - us-gaap:AssetsCurrent
+- id: BS_PROPERTY_AND_EQUIPMENT_NET
+  tab: Hist_BS
+  order: 180
+  label: Property and equipment, net (Note 4)
+  concepts:
+  - us-gaap:PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAfterAccumulatedDepreciationAndAmortization
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_OPERATING_LEASE_RIGHT_OF_USE_ASSETS_NET
+  tab: Hist_BS
+  order: 190
+  label: Operating lease right-of-use assets, net (Note 6)
+  concepts:
+  - us-gaap:OperatingLeaseRightOfUseAsset
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_GOODWILL
+  tab: Hist_BS
+  order: 200
+  label: Goodwill (Note 5)
+  concepts:
+  - us-gaap:Goodwill
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_INTANGIBLE_ASSETS_NET
+  tab: Hist_BS
+  order: 210
+  label: Intangible assets, net (Note 5)
+  concepts:
+  - us-gaap:IntangibleAssetsNetExcludingGoodwill
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_DEFERRED_TAX_ASSETS
+  tab: Hist_BS
+  order: 220
+  label: Deferred tax assets (Note 1 and Note 9)
+  concepts:
+  - us-gaap:DeferredIncomeTaxAssetsNet
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_OTHER_ASSETS
+  tab: Hist_BS
+  order: 230
+  label: Other assets
+  concepts:
+  - us-gaap:OtherAssetsNoncurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_TOTAL_ASSETS
+  tab: Hist_BS
+  order: 240
+  label: Total assets
+  concepts:
+  - us-gaap:Assets
+  period_type: instant
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{BS_TOTAL_CURRENT_ASSETS} + {BS_PROPERTY_AND_EQUIPMENT_NET} + {BS_OPERATING_LEASE_RIGHT_OF_USE_ASSETS_NET}
+    + {BS_GOODWILL} + {BS_INTANGIBLE_ASSETS_NET} + {BS_DEFERRED_TAX_ASSETS} + {BS_OTHER_ASSETS}'
+  reported_concepts:
+  - us-gaap:Assets
+- id: HDR_BS_LIABILITIES_REDEEMABLE_NON_CONTROLLING_INTEREST_AND_STOCKHOL
+  tab: Hist_BS
+  order: 250
+  label: Liabilities, Redeemable Non-controlling Interest, and Stockholders' Equity
+  kind: header
+  status: proposed
+- id: HDR_BS_CURRENT_LIABILITIES
+  tab: Hist_BS
+  order: 260
+  label: 'Current liabilities:'
+  kind: header
+  status: proposed
+- id: BS_ACCOUNTS_PAYABLE
+  tab: Hist_BS
+  order: 270
+  label: Accounts payable
+  concepts:
+  - us-gaap:AccountsPayableCurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_CURRENT_PORTION_OF_FINANCE_LEASES
+  tab: Hist_BS
+  order: 280
+  label: Current portion of finance leases (Note 6)
+  concepts:
+  - us-gaap:FinanceLeaseLiabilityCurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_CURRENT_PORTION_OF_OPERATING_LEASES
+  tab: Hist_BS
+  order: 290
+  label: Current portion of operating leases (Note 6)
+  concepts:
+  - us-gaap:OperatingLeaseLiabilityCurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_ACCRUED_COMPENSATION
+  tab: Hist_BS
+  order: 300
+  label: Accrued compensation
+  concepts:
+  - us-gaap:EmployeeRelatedLiabilitiesCurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_LONG_TERM_DEBT_CURRENT_PORTION
+  tab: Hist_BS
+  order: 310
+  label: Long-term debt, current portion (Note 8)
+  concepts:
+  - us-gaap:LongTermDebtCurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_ACCRUED_LIABILITIES
+  tab: Hist_BS
+  order: 320
+  label: Accrued liabilities
+  concepts:
+  - us-gaap:AccruedLiabilitiesCurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_TOTAL_CURRENT_LIABILITIES
+  tab: Hist_BS
+  order: 330
+  label: Total current liabilities
+  concepts:
+  - us-gaap:LiabilitiesCurrent
+  period_type: instant
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{BS_ACCOUNTS_PAYABLE} + {BS_CURRENT_PORTION_OF_FINANCE_LEASES} + {BS_CURRENT_PORTION_OF_OPERATING_LEASES}
+    + {BS_ACCRUED_COMPENSATION} + {BS_LONG_TERM_DEBT_CURRENT_PORTION} + {BS_ACCRUED_LIABILITIES}'
+  reported_concepts:
+  - us-gaap:LiabilitiesCurrent
+- id: BS_OTHER_LONG_TERM_LIABILITIES
+  tab: Hist_BS
+  order: 340
+  label: Other long-term liabilities
+  concepts:
+  - us-gaap:OtherLiabilitiesNoncurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_FINANCE_LEASES_LESS_CURRENT_PORTION
+  tab: Hist_BS
+  order: 350
+  label: Finance leases, less current portion (Note 6)
+  concepts:
+  - us-gaap:FinanceLeaseLiabilityNoncurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_OPERATING_LEASES_LESS_CURRENT_PORTION
+  tab: Hist_BS
+  order: 360
+  label: Operating leases, less current portion (Note 6)
+  concepts:
+  - us-gaap:OperatingLeaseLiabilityNoncurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_LONG_TERM_DEBT_LESS_CURRENT_PORTION
+  tab: Hist_BS
+  order: 370
+  label: Long-term debt, less current portion (Note 1 and Note 8)
+  concepts:
+  - us-gaap:LongTermDebtNoncurrent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_TOTAL_LIABILITIES
+  tab: Hist_BS
+  order: 380
+  label: Total liabilities
+  concepts:
+  - us-gaap:Liabilities
+  period_type: instant
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{BS_TOTAL_CURRENT_LIABILITIES} + {BS_OTHER_LONG_TERM_LIABILITIES} + {BS_FINANCE_LEASES_LESS_CURRENT_PORTION}
+    + {BS_OPERATING_LEASES_LESS_CURRENT_PORTION} + {BS_LONG_TERM_DEBT_LESS_CURRENT_PORTION}'
+  reported_concepts:
+  - us-gaap:Liabilities
+- id: BS_COMMITMENTS_AND_CONTINGENCIES
+  tab: Hist_BS
+  order: 390
+  label: Commitments and contingencies (Note 10)
+  concepts:
+  - us-gaap:CommitmentsAndContingencies
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_REDEEMABLE_NON_CONTROLLING_INTEREST
+  tab: Hist_BS
+  order: 400
+  label: Redeemable non-controlling interest (Note 1)
+  concepts:
+  - us-gaap:TemporaryEquityCarryingAmountAttributableToParent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: HDR_BS_STOCKHOLDERS_EQUITY
+  tab: Hist_BS
+  order: 410
+  label: 'Stockholders’ equity (Note 1):'
+  kind: header
+  status: proposed
+- id: BS_COMMON_STOCK_PAR_VALUE_0_01_1_000_000_000_SHARES_AUTHORIZED_
+  tab: Hist_BS
+  order: 420
+  label: Common stock, par value $0.01; 1,000,000,000 shares authorized; 45,895,384 and 45,601,760 shares
+    issued, and 44,390,032 and 44,913,296 shares outstanding at December 28, 2025 and December 29, 2024,
+    respectively
+  concepts:
+  - us-gaap:CommonStockValue
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_ADDITIONAL_PAID_IN_CAPITAL
+  tab: Hist_BS
+  order: 430
+  label: Additional paid-in capital
+  concepts:
+  - us-gaap:AdditionalPaidInCapital
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_RETAINED_EARNINGS
+  tab: Hist_BS
+  order: 440
+  label: Retained earnings
+  concepts:
+  - us-gaap:RetainedEarningsAccumulatedDeficit
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_ACCUMULATED_OTHER_COMPREHENSIVE_LOSS
+  tab: Hist_BS
+  order: 450
+  label: Accumulated other comprehensive loss
+  concepts:
+  - us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_TREASURY_STOCK_AT_COST_1_505_352_AND_688_464_SHARES_AT_DECEM
+  tab: Hist_BS
+  order: 460
+  label: Treasury stock, at cost, 1,505,352 and 688,464 shares at December 28, 2025 and December 29, 2024,
+    respectively
+  concepts:
+  - us-gaap:TreasuryStockCommonValue
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: BS_TOTAL_STOCKHOLDERS_EQUITY
+  tab: Hist_BS
+  order: 470
+  label: Total stockholders’ equity
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{BS_COMMON_STOCK_PAR_VALUE_0_01_1_000_000_000_SHARES_AUTHORIZED_} + {BS_ADDITIONAL_PAID_IN_CAPITAL}
+    + {BS_RETAINED_EARNINGS} + {BS_ACCUMULATED_OTHER_COMPREHENSIVE_LOSS} - {BS_TREASURY_STOCK_AT_COST_1_505_352_AND_688_464_SHARES_AT_DECEM}'
+  reported_concepts:
+  - us-gaap:StockholdersEquity
+- id: BS_TOTAL_LIABILITIES_REDEEMABLE_NON_CONTROLLING_INTEREST_AND_ST
+  tab: Hist_BS
+  order: 480
+  label: Total liabilities, redeemable non-controlling interest, and stockholders’ equity
+  concepts:
+  - us-gaap:LiabilitiesAndStockholdersEquity
+  period_type: instant
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{BS_TOTAL_LIABILITIES} + {BS_COMMITMENTS_AND_CONTINGENCIES} + {BS_REDEEMABLE_NON_CONTROLLING_INTEREST}
+    + {BS_TOTAL_STOCKHOLDERS_EQUITY}'
+  reported_concepts:
+  - us-gaap:LiabilitiesAndStockholdersEquity
+- id: HDR_CF_CASH_FLOWS_FROM_OPERATING_ACTIVITIES
+  tab: Hist_CF
+  order: 100
+  label: 'Cash Flows from Operating Activities:'
+  kind: header
+  status: proposed
+- id: CF_NET_INCOME
+  tab: Hist_CF
+  order: 110
+  label: Net income
+  concepts:
+  - us-gaap:ProfitLoss
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: HDR_CF_ADJUSTMENTS_TO_RECONCILE_NET_INCOME_TO_NET_CASH_PROVIDED_BY_
+  tab: Hist_CF
+  order: 120
+  label: 'Adjustments to reconcile Net income to net cash provided by operating activities:'
+  kind: header
+  status: proposed
+- id: CF_AMORTIZATION_OF_FINANCE_LEASE_RIGHT_OF_USE_ASSETS_AND_DEPREC
+  tab: Hist_CF
+  order: 130
+  label: Amortization of finance lease right-of-use assets and depreciation
+  concepts:
+  - site:FinanceLeaseRightofUseAssetAmortizationAndDepreciation
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: custom
+- id: CF_STOCK_BASED_COMPENSATION
+  tab: Hist_CF
+  order: 140
+  label: Stock-based compensation
+  concepts:
+  - us-gaap:ShareBasedCompensation
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_AMORTIZATION_OF_SOFTWARE_AND_INTANGIBLE_ASSETS
+  tab: Hist_CF
+  order: 150
+  label: Amortization of software and intangible assets
+  concepts:
+  - site:AmortizationofSoftwareandIntangibleAssets
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: custom
+- id: CF_AMORTIZATION_OF_DEBT_RELATED_COSTS
+  tab: Hist_CF
+  order: 160
+  label: Amortization of debt related costs
+  concepts:
+  - us-gaap:AmortizationOfFinancingCostsAndDiscounts
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_LOSS_ON_EXTINGUISHMENT_OF_DEBT
+  tab: Hist_CF
+  order: 170
+  label: Loss on extinguishment of debt
+  concepts:
+  - us-gaap:GainsLossesOnExtinguishmentOfDebt
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_GAIN_LOSS_ON_SALE_OF_EQUIPMENT
+  tab: Hist_CF
+  order: 180
+  label: (Gain) loss on sale of equipment
+  concepts:
+  - us-gaap:GainLossOnSaleOfPropertyPlantEquipment
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_DEFERRED_INCOME_TAXES
+  tab: Hist_CF
+  order: 190
+  label: Deferred income taxes
+  concepts:
+  - us-gaap:DeferredIncomeTaxExpenseBenefit
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_OTHER
+  tab: Hist_CF
+  order: 200
+  label: Other
+  concepts:
+  - us-gaap:OtherOperatingActivitiesCashFlowStatement
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: HDR_CF_CHANGES_IN_OPERATING_ASSETS_AND_LIABILITIES_NET_OF_THE_EFFEC
+  tab: Hist_CF
+  order: 210
+  label: 'Changes in operating assets and liabilities, net of the effects of acquisitions:'
+  kind: header
+  status: proposed
+- id: CF_RECEIVABLES
+  tab: Hist_CF
+  order: 220
+  label: Receivables
+  concepts:
+  - us-gaap:IncreaseDecreaseInOtherReceivables
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_INVENTORY
+  tab: Hist_CF
+  order: 230
+  label: Inventory
+  concepts:
+  - us-gaap:IncreaseDecreaseInInventories
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_INCOME_TAX_RECEIVABLE
+  tab: Hist_CF
+  order: 240
+  label: Income tax receivable
+  concepts:
+  - us-gaap:IncreaseDecreaseInIncomeTaxesReceivable
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_PREPAID_EXPENSES_AND_OTHER_ASSETS
+  tab: Hist_CF
+  order: 250
+  label: Prepaid expenses and other assets
+  concepts:
+  - us-gaap:IncreaseDecreaseInPrepaidDeferredExpenseAndOtherAssets
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_ACCOUNTS_PAYABLE
+  tab: Hist_CF
+  order: 260
+  label: Accounts payable
+  concepts:
+  - us-gaap:IncreaseDecreaseInAccountsPayable
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_INCOME_TAX_PAYABLE
+  tab: Hist_CF
+  order: 270
+  label: Income tax payable
+  concepts:
+  - us-gaap:IncreaseDecreaseInAccruedIncomeTaxesPayable
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_ACCRUED_EXPENSES_AND_OTHER_LIABILITIES
+  tab: Hist_CF
+  order: 280
+  label: Accrued expenses and other liabilities
+  concepts:
+  - us-gaap:IncreaseDecreaseInAccruedLiabilities
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_NET_CASH_PROVIDED_BY_OPERATING_ACTIVITIES
+  tab: Hist_CF
+  order: 290
+  label: Net Cash Provided By Operating Activities
+  concepts:
+  - us-gaap:NetCashProvidedByUsedInOperatingActivities
+  period_type: duration
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{CF_NET_INCOME} + {CF_AMORTIZATION_OF_FINANCE_LEASE_RIGHT_OF_USE_ASSETS_AND_DEPREC} + {CF_STOCK_BASED_COMPENSATION}
+    + {CF_AMORTIZATION_OF_SOFTWARE_AND_INTANGIBLE_ASSETS} + {CF_AMORTIZATION_OF_DEBT_RELATED_COSTS} -
+    {CF_LOSS_ON_EXTINGUISHMENT_OF_DEBT} - {CF_GAIN_LOSS_ON_SALE_OF_EQUIPMENT} + {CF_DEFERRED_INCOME_TAXES}
+    + {CF_OTHER} - {CF_RECEIVABLES} - {CF_INVENTORY} - {CF_INCOME_TAX_RECEIVABLE} - {CF_PREPAID_EXPENSES_AND_OTHER_ASSETS}
+    + {CF_ACCOUNTS_PAYABLE} + {CF_INCOME_TAX_PAYABLE} + {CF_ACCRUED_EXPENSES_AND_OTHER_LIABILITIES}'
+  reported_concepts:
+  - us-gaap:NetCashProvidedByUsedInOperatingActivities
+- id: HDR_CF_CASH_FLOWS_FROM_INVESTING_ACTIVITIES
+  tab: Hist_CF
+  order: 300
+  label: 'Cash Flows from Investing Activities:'
+  kind: header
+  status: proposed
+- id: CF_PURCHASES_OF_PROPERTY_AND_EQUIPMENT
+  tab: Hist_CF
+  order: 310
+  label: Purchases of property and equipment
+  concepts:
+  - us-gaap:PaymentsToAcquirePropertyPlantAndEquipment
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_PURCHASES_OF_INTANGIBLE_ASSETS
+  tab: Hist_CF
+  order: 320
+  label: Purchases of intangible assets
+  concepts:
+  - us-gaap:PaymentsToAcquireIntangibleAssets
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_ACQUISITIONS_NET_OF_CASH_ACQUIRED
+  tab: Hist_CF
+  order: 330
+  label: Acquisitions, net of cash acquired
+  concepts:
+  - us-gaap:PaymentsToAcquireBusinessesNetOfCashAcquired
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_PROCEEDS_FROM_THE_SALE_OF_PROPERTY_AND_EQUIPMENT
+  tab: Hist_CF
+  order: 340
+  label: Proceeds from the sale of property and equipment
+  concepts:
+  - us-gaap:ProceedsFromSaleOfPropertyPlantAndEquipment
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_NET_CASH_USED_IN_INVESTING_ACTIVITIES
+  tab: Hist_CF
+  order: 350
+  label: Net Cash Used In Investing Activities
+  concepts:
+  - us-gaap:NetCashProvidedByUsedInInvestingActivities
+  period_type: duration
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '- {CF_PURCHASES_OF_PROPERTY_AND_EQUIPMENT} - {CF_PURCHASES_OF_INTANGIBLE_ASSETS} - {CF_ACQUISITIONS_NET_OF_CASH_ACQUIRED}
+    + {CF_PROCEEDS_FROM_THE_SALE_OF_PROPERTY_AND_EQUIPMENT}'
+  reported_concepts:
+  - us-gaap:NetCashProvidedByUsedInInvestingActivities
+- id: HDR_CF_CASH_FLOWS_FROM_FINANCING_ACTIVITIES
+  tab: Hist_CF
+  order: 360
+  label: 'Cash Flows from Financing Activities:'
+  kind: header
+  status: proposed
+- id: CF_EQUITY_PROCEEDS_FROM_COMMON_STOCK
+  tab: Hist_CF
+  order: 370
+  label: Equity proceeds from common stock
+  concepts:
+  - us-gaap:ProceedsFromIssuanceOfCommonStock
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_REPURCHASES_OF_COMMON_SHARES
+  tab: Hist_CF
+  order: 380
+  label: Repurchases of common shares
+  concepts:
+  - us-gaap:PaymentsForRepurchaseOfCommonStock
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_DISTRIBUTIONS_TO_NON_CONTROLLING_INTEREST
+  tab: Hist_CF
+  order: 390
+  label: Distributions to non-controlling interest
+  concepts:
+  - us-gaap:PaymentsOfDividendsMinorityInterest
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_BORROWINGS_UNDER_TERM_LOAN
+  tab: Hist_CF
+  order: 400
+  label: Borrowings under term loan
+  concepts:
+  - us-gaap:ProceedsFromIssuanceOfSeniorLongTermDebt
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_REPAYMENTS_UNDER_TERM_LOAN
+  tab: Hist_CF
+  order: 410
+  label: Repayments under term loan
+  concepts:
+  - us-gaap:RepaymentsOfSeniorDebt
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_BORROWINGS_ON_ASSET_BASED_CREDIT_FACILITIES
+  tab: Hist_CF
+  order: 420
+  label: Borrowings on asset-based credit facilities
+  concepts:
+  - us-gaap:ProceedsFromLinesOfCredit
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_REPAYMENTS_ON_ASSET_BASED_CREDIT_FACILITIES
+  tab: Hist_CF
+  order: 430
+  label: Repayments on asset-based credit facilities
+  concepts:
+  - us-gaap:RepaymentsOfLinesOfCredit
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_PAYMENTS_OF_DEBT_ISSUANCE_COSTS
+  tab: Hist_CF
+  order: 440
+  label: Payments of debt issuance costs
+  concepts:
+  - us-gaap:PaymentsOfDebtIssuanceCosts
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_PAYMENTS_ON_FINANCE_LEASE_OBLIGATIONS
+  tab: Hist_CF
+  order: 450
+  label: Payments on finance lease obligations
+  concepts:
+  - us-gaap:FinanceLeasePrincipalPayments
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_PAYMENTS_OF_ACQUISITION_RELATED_CONTINGENT_OBLIGATIONS
+  tab: Hist_CF
+  order: 460
+  label: Payments of acquisition related contingent obligations
+  concepts:
+  - us-gaap:PaymentForContingentConsiderationLiabilityFinancingActivities
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_OTHER_FINANCING_ACTIVITIES
+  tab: Hist_CF
+  order: 470
+  label: Other financing activities
+  concepts:
+  - us-gaap:ProceedsFromPaymentsForOtherFinancingActivities
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_NET_CASH_USED_IN_FINANCING_ACTIVITIES
+  tab: Hist_CF
+  order: 480
+  label: Net Cash Used In Financing Activities
+  concepts:
+  - us-gaap:NetCashProvidedByUsedInFinancingActivities
+  period_type: duration
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{CF_EQUITY_PROCEEDS_FROM_COMMON_STOCK} - {CF_REPURCHASES_OF_COMMON_SHARES} - {CF_DISTRIBUTIONS_TO_NON_CONTROLLING_INTEREST}
+    + {CF_BORROWINGS_UNDER_TERM_LOAN} - {CF_REPAYMENTS_UNDER_TERM_LOAN} + {CF_BORROWINGS_ON_ASSET_BASED_CREDIT_FACILITIES}
+    - {CF_REPAYMENTS_ON_ASSET_BASED_CREDIT_FACILITIES} - {CF_PAYMENTS_OF_DEBT_ISSUANCE_COSTS} - {CF_PAYMENTS_ON_FINANCE_LEASE_OBLIGATIONS}
+    - {CF_PAYMENTS_OF_ACQUISITION_RELATED_CONTINGENT_OBLIGATIONS} + {CF_OTHER_FINANCING_ACTIVITIES}'
+  reported_concepts:
+  - us-gaap:NetCashProvidedByUsedInFinancingActivities
+- id: CF_EFFECT_OF_EXCHANGE_RATE_ON_CASH
+  tab: Hist_CF
+  order: 490
+  label: Effect of exchange rate on cash
+  concepts:
+  - us-gaap:EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_NET_CHANGE_IN_CASH
+  tab: Hist_CF
+  order: 500
+  label: Net Change In Cash
+  concepts:
+  - us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect
+  period_type: duration
+  unit: USD
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: formula
+  taxonomy_type: standard
+  template: '{CF_NET_CASH_PROVIDED_BY_OPERATING_ACTIVITIES} + {CF_NET_CASH_USED_IN_INVESTING_ACTIVITIES}
+    + {CF_NET_CASH_USED_IN_FINANCING_ACTIVITIES} + {CF_EFFECT_OF_EXCHANGE_RATE_ON_CASH}'
+  reported_concepts:
+  - us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect
+- id: HDR_CF_CASH_AND_CASH_EQUIVALENTS
+  tab: Hist_CF
+  order: 510
+  label: 'Cash and cash equivalents:'
+  kind: header
+  status: proposed
+- id: CF_BEGINNING
+  tab: Hist_CF
+  order: 520
+  label: Beginning
+  concepts:
+  - us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_ENDING
+  tab: Hist_CF
+  order: 530
+  label: Ending
+  concepts:
+  - us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: HDR_CF_SUPPLEMENTAL_DISCLOSURES_OF_CASH_FLOW_INFORMATION
+  tab: Hist_CF
+  order: 540
+  label: 'Supplemental Disclosures of Cash Flow Information:'
+  kind: header
+  status: proposed
+- id: CF_CASH_PAID_DURING_THE_YEAR_FOR_INTEREST
+  tab: Hist_CF
+  order: 550
+  label: Cash paid during the year for interest
+  concepts:
+  - us-gaap:InterestPaidNet
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: CF_CASH_PAID_DURING_THE_YEAR_FOR_INCOME_TAXES
+  tab: Hist_CF
+  order: 560
+  label: Cash paid during the year for income taxes
+  concepts:
+  - us-gaap:IncomeTaxesPaidNet
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: HDR_EQ_INCREASE_DECREASE_IN_STOCKHOLDERS_EQUITY_ROLL_FORWARD
+  tab: Hist_EQ
+  order: 100
+  label: Increase (Decrease) in Stockholders' Equity [Roll Forward]
+  kind: header
+  status: proposed
+- id: EQ_STOCKHOLDERS_EQUITY_BEGINNING_BALANCE_IN_SHARES
+  tab: Hist_EQ
+  order: 110
+  label: Stockholders' equity, beginning balance (in shares)
+  concepts:
+  - us-gaap:CommonStockSharesOutstanding
+  period_type: instant
+  unit: shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_COMMON_STOCK_COMMON_STOCK_BEGINNING_BALANCE
+  tab: Hist_EQ
+  order: 120
+  label: Common Stock - Beginning balance
+  concepts:
+  - us-gaap:CommonStockSharesOutstanding
+  period_type: instant
+  unit: shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_STOCKHOLDERS_EQUITY_BEGINNING_BALANCE
+  tab: Hist_EQ
+  order: 130
+  label: Stockholders' equity, beginning balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_COMMON_STOCK_COMMON_STOCK_BEGINNING_BALANCE_2
+  tab: Hist_EQ
+  order: 140
+  label: Common Stock - Beginning balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAID_IN_CAPITAL_BEGINN
+  tab: Hist_EQ
+  order: 150
+  label: Additional Paid-in Capital - Beginning balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:AdditionalPaidInCapitalMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_RETAINED_EARNINGS_RETAINED_EARNINGS_BEGINNING_BALANCE
+  tab: Hist_EQ
+  order: 160
+  label: Retained Earnings - Beginning balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:RetainedEarningsMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_ACCUMULATED_OTHER_COMPREHENSIVE_INCOME_LOSS_ACCUMULATED_OTHE
+  tab: Hist_EQ
+  order: 170
+  label: Accumulated Other Comprehensive Income (Loss) - Beginning balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:AccumulatedOtherComprehensiveIncomeMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_TREASURY_STOCK_TREASURY_STOCK_BEGINNING_BALANCE
+  tab: Hist_EQ
+  order: 180
+  label: Treasury Stock - Beginning balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:TreasuryStockCommonMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_NET_INCOME_ATTRIBUTABLE_TO_SITEONE
+  tab: Hist_EQ
+  order: 190
+  label: Net income attributable to SiteOne
+  concepts:
+  - us-gaap:NetIncomeLoss
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_RETAINED_EARNINGS_RETAINED_EARNINGS
+  tab: Hist_EQ
+  order: 200
+  label: Retained Earnings
+  concepts:
+  - us-gaap:NetIncomeLoss
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:RetainedEarningsMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_OTHER_COMPREHENSIVE_LOSS_INCOME
+  tab: Hist_EQ
+  order: 210
+  label: Other comprehensive (loss) income
+  concepts:
+  - us-gaap:OtherComprehensiveIncomeLossNetOfTaxPortionAttributableToParent
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_ACCUMULATED_OTHER_COMPREHENSIVE_INCOME_LOSS_ACCUMULATED_OTHE_2
+  tab: Hist_EQ
+  order: 220
+  label: Accumulated Other Comprehensive Income (Loss)
+  concepts:
+  - us-gaap:OtherComprehensiveIncomeLossNetOfTaxPortionAttributableToParent
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:AccumulatedOtherComprehensiveIncomeMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_ISSUANCE_OF_COMMON_SHARES_UNDER_STOCK_BASED_COMPENSATION_PLA
+  tab: Hist_EQ
+  order: 230
+  label: Issuance of common shares under stock-based compensation plan (in shares)
+  concepts:
+  - us-gaap:StockIssuedDuringPeriodSharesShareBasedCompensation
+  period_type: duration
+  unit: shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_COMMON_STOCK_COMMON_STOCK
+  tab: Hist_EQ
+  order: 240
+  label: Common Stock
+  concepts:
+  - us-gaap:StockIssuedDuringPeriodSharesShareBasedCompensation
+  period_type: duration
+  unit: shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_ISSUANCE_OF_COMMON_SHARES_UNDER_STOCK_BASED_COMPENSATION_PLA_2
+  tab: Hist_EQ
+  order: 250
+  label: Issuance of common shares under stock-based compensation plan
+  concepts:
+  - us-gaap:StockIssuedDuringPeriodValueShareBasedCompensation
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAID_IN_CAPITAL
+  tab: Hist_EQ
+  order: 260
+  label: Additional Paid-in Capital
+  concepts:
+  - us-gaap:StockIssuedDuringPeriodValueShareBasedCompensation
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:AdditionalPaidInCapitalMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_STOCK_BASED_COMPENSATION
+  tab: Hist_EQ
+  order: 270
+  label: Stock-based compensation
+  concepts:
+  - us-gaap:AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAID_IN_CAPITAL_2
+  tab: Hist_EQ
+  order: 280
+  label: Additional Paid-in Capital
+  concepts:
+  - us-gaap:AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:AdditionalPaidInCapitalMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_REPURCHASES_OF_COMMON_STOCK_IN_SHARES
+  tab: Hist_EQ
+  order: 290
+  label: Repurchases of common stock (in shares)
+  concepts:
+  - us-gaap:StockRepurchasedDuringPeriodShares
+  period_type: instant
+  unit: shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_COMMON_STOCK_COMMON_STOCK_2
+  tab: Hist_EQ
+  order: 300
+  label: Common Stock
+  concepts:
+  - us-gaap:StockRepurchasedDuringPeriodShares
+  period_type: instant
+  unit: shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_REPURCHASES_OF_COMMON_SHARES
+  tab: Hist_EQ
+  order: 310
+  label: Repurchases of common shares
+  concepts:
+  - us-gaap:StockRepurchasedDuringPeriodValue
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_TREASURY_STOCK_TREASURY_STOCK
+  tab: Hist_EQ
+  order: 320
+  label: Treasury Stock
+  concepts:
+  - us-gaap:StockRepurchasedDuringPeriodValue
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:TreasuryStockCommonMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_STOCKHOLDERS_EQUITY_ENDING_BALANCE_IN_SHARES
+  tab: Hist_EQ
+  order: 330
+  label: Stockholders' equity, ending balance (in shares)
+  concepts:
+  - us-gaap:CommonStockSharesOutstanding
+  period_type: instant
+  unit: shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_COMMON_STOCK_COMMON_STOCK_ENDING_BALANCE
+  tab: Hist_EQ
+  order: 340
+  label: Common Stock - Ending balance
+  concepts:
+  - us-gaap:CommonStockSharesOutstanding
+  period_type: instant
+  unit: shares
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_STOCKHOLDERS_EQUITY_ENDING_BALANCE
+  tab: Hist_EQ
+  order: 350
+  label: Stockholders' equity, ending balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_COMMON_STOCK_COMMON_STOCK_ENDING_BALANCE_2
+  tab: Hist_EQ
+  order: 360
+  label: Common Stock - Ending balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAID_IN_CAPITAL_ENDING
+  tab: Hist_EQ
+  order: 370
+  label: Additional Paid-in Capital - Ending balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:AdditionalPaidInCapitalMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_RETAINED_EARNINGS_RETAINED_EARNINGS_ENDING_BALANCE
+  tab: Hist_EQ
+  order: 380
+  label: Retained Earnings - Ending balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:RetainedEarningsMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_ACCUMULATED_OTHER_COMPREHENSIVE_INCOME_LOSS_ACCUMULATED_OTHE_3
+  tab: Hist_EQ
+  order: 390
+  label: Accumulated Other Comprehensive Income (Loss) - Ending balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:AccumulatedOtherComprehensiveIncomeMember
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_TREASURY_STOCK_TREASURY_STOCK_ENDING_BALANCE
+  tab: Hist_EQ
+  order: 400
+  label: Treasury Stock - Ending balance
+  concepts:
+  - us-gaap:StockholdersEquity
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  dimensions:
+    us-gaap:StatementEquityComponentsAxis: us-gaap:TreasuryStockCommonMember
+  kind: fact
+  taxonomy_type: standard
+- id: HDR_EQ_INCREASE_DECREASE_IN_TEMPORARY_EQUITY_ROLL_FORWARD
+  tab: Hist_EQ
+  order: 410
+  label: Increase (Decrease) in Temporary Equity [Roll Forward]
+  kind: header
+  status: proposed
+- id: EQ_REDEEMABLE_CONVERTIBLE_PREFERRED_STOCK_BEGINNING_BALANCE
+  tab: Hist_EQ
+  order: 420
+  label: Redeemable convertible preferred stock, beginning balance
+  concepts:
+  - us-gaap:TemporaryEquityCarryingAmountAttributableToParent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_NET_INCOME_ATTRIBUTABLE_TO_NON_CONTROLLING_INTEREST
+  tab: Hist_EQ
+  order: 430
+  label: Net income attributable to non-controlling interest
+  concepts:
+  - us-gaap:TemporaryEquityNetIncome
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_ACQUISITION_OF_NON_CONTROLLING_INTEREST
+  tab: Hist_EQ
+  order: 440
+  label: Acquisition of non-controlling interest
+  concepts:
+  - site:TemporaryEquityAcquisitionOfNonControllingInterest
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: custom
+- id: EQ_ADJUSTMENT_OF_NON_CONTROLLING_INTEREST_TO_REDEMPTION_VALUE
+  tab: Hist_EQ
+  order: 450
+  label: Adjustment of non-controlling interest to redemption value
+  concepts:
+  - us-gaap:TemporaryEquityAccretionToRedemptionValue
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard
+- id: EQ_DISTRIBUTIONS_TO_NON_CONTROLLING_INTEREST
+  tab: Hist_EQ
+  order: 460
+  label: Distributions to non-controlling interest
+  concepts:
+  - site:TemporaryEquityDistributionsToNonControllingInterest
+  period_type: duration
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: custom
+- id: EQ_REDEEMABLE_CONVERTIBLE_PREFERRED_STOCK_ENDING_BALANCE
+  tab: Hist_EQ
+  order: 470
+  label: Redeemable convertible preferred stock, ending balance
+  concepts:
+  - us-gaap:TemporaryEquityCarryingAmountAttributableToParent
+  period_type: instant
+  unit: USD
+  sign: 1
+  required: true
+  allow_missing: false
+  status: proposed
+  kind: fact
+  taxonomy_type: standard

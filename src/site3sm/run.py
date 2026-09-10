@@ -1,7 +1,7 @@
 """CLI entry point (spec Sec 9.9). Every command writes a run manifest (spec Sec 7.4).
 
-Only `extract` is implemented in Phase 1. The rest raise NotImplementedError naming
-the phase that adds them -- see PLAN.md.
+`extract` and `discover` are implemented (Phases 1-2). The rest raise
+NotImplementedError naming the phase that adds them -- see PLAN.md.
 """
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ import sys
 from dotenv import load_dotenv
 
 from site3sm.config_models import load_settings
+from site3sm.discovery import run_discovery
 from site3sm.edgar_client import EdgarClient
 from site3sm.extract import run_extract
 
@@ -80,6 +81,31 @@ def cmd_extract(args: argparse.Namespace) -> None:
     print(f"Manifest: {manifest_path.relative_to(REPO_ROOT)}")
 
 
+def cmd_discover(_args: argparse.Namespace) -> None:
+    settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
+    report_path = run_discovery(
+        settings,
+        config_dir=REPO_ROOT / "config",
+        reports_dir=REPO_ROOT / "reports",
+        staging_path=REPO_ROOT / "data" / "staging" / "facts_long.parquet",
+    )
+    manifest_path = _write_manifest(
+        "discover",
+        target_sheet=None,
+        extra={
+            "filings_used": [],
+            "fact_counts": {"companyfacts": None, "instance": None},
+            "recasts_logged": 0,
+            "missing_or_custom_lines": [],
+            "validation": {"passed": None, "report": None},
+            "verification": {"passed": None, "report": None},
+        },
+    )
+    print(f"Discovery report: {report_path.relative_to(REPO_ROOT)}")
+    print("Draft config/line_items.yaml and config/templates.yaml written -- all entries status: proposed.")
+    print(f"Manifest: {manifest_path.relative_to(REPO_ROOT)}")
+
+
 def _not_implemented(phase: str):
     def handler(_args: argparse.Namespace) -> None:
         raise NotImplementedError(f"`{phase}` is not implemented yet -- see PLAN.md for phase status.")
@@ -96,7 +122,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_extract.set_defaults(func=cmd_extract)
 
     p_discover = sub.add_parser("discover", help="XBRL concept discovery (Phase 2)")
-    p_discover.set_defaults(func=_not_implemented("discover (Phase 2)"))
+    p_discover.set_defaults(func=cmd_discover)
 
     p_select = sub.add_parser("select", help="Select and validate facts (Phase 3)")
     p_select.set_defaults(func=_not_implemented("select (Phase 3)"))

@@ -1,6 +1,6 @@
 # PLAN — SITE Three-Statement Model Pipeline
 
-Status: **Phase 1 complete, awaiting Gate 1 approval.** Gate 0 cleared (owner answered the Phase-1-blocking open questions in §5). See `docs/SPEC_site_3sm_pipeline.md` for the full spec this plan implements, and the guide entries in `three_statement_model_guide/` for what each phase actually built.
+Status: **Phase 2 complete, awaiting Gate 2 approval.** Gates 0 and 1 cleared. See `docs/SPEC_site_3sm_pipeline.md` for the full spec this plan implements, and the guide entries in `three_statement_model_guide/` for what each phase actually built.
 
 ## 1. Objective (restated)
 
@@ -56,7 +56,7 @@ No dependency manager beyond plain `pip` + `venv` (matches every other Python pr
 Per spec §15, these need the owner's judgment (several require reading SITE's actual 10-K Note 1) before the phases that depend on them can proceed:
 
 1. ~~Dependency manager~~ — **resolved:** plain `pip` + `venv`, no uv/poetry.
-2. XBRL parser selection — **still open**, decided at Gate 2, after the Phase 2 spike (Arelle vs edgartools vs direct `lxml`). Does not block Phase 1.
+2. ~~XBRL parser selection~~ — **resolved: edgartools.** Spiked directly against the anchor filing (see `three_statement_model_guide/2026-09-10-phase2-discovery.md`); met every Sec 9.3 acceptance criterion on the first attempt. Arelle not separately installed/tested (documented trade-off); direct lxml rejected as reinventing what edgartools already does. Pinned in `requirements.txt`.
 3. ~~Validation tolerance~~ — **resolved:** `0.1` ($ millions), set in `config/settings.yaml`. Does not block Phase 1 (Phase 3).
 4. ~~Include the opening balance sheet column~~ — **resolved: yes.** `periods.include_opening_balance_sheet: true` in `config/settings.yaml` — Phase 1's filing discovery must reach back one more fiscal year-end to cover it.
 5. Cash-tie target — **still open** (`cash_tie.*` left `null` in settings, by design — set at Gate 2 from discovery). Does not block Phase 1.
@@ -68,7 +68,7 @@ Per spec §15, these need the owner's judgment (several require reading SITE's a
 
 **New setting added by the owner, not in the original spec (§9.5/§12.3 scope-control note):** `validation.report_all_nonzero_differences: true` in `config/settings.yaml` — `validate.py`'s report should list every check's numeric difference, not just the ones that fail tolerance. Noted here per R12 rather than silently absorbed.
 
-**Remaining Phase-1 blockers: none.** Everything Phase 1 (`config_models.py`, `edgar_client.py`, filing discovery, `companyfacts` extraction) needs is now set: issuer/CIK, `periods.anchor`/`historical_fiscal_years`/`include_opening_balance_sheet`, `sec.*`, `.env` credentials and both sheet IDs. Items 2, 5, 6, 9, 10 above remain genuinely open but gate later phases (2, 3, 6/7), not Phase 1.
+**Remaining blockers for Phase 3 (select_facts.py/validate.py): item 5 (cash-tie target).** Everything else Phase 3 needs -- approved `line_items.yaml`/`templates.yaml` from this Gate 2 review, tolerance, opening-BS decision -- is set. Items 6, 9, 10 remain open but gate later phases (7, 6, 7 respectively).
 
 ## 6. Explicitly out of scope (v1)
 

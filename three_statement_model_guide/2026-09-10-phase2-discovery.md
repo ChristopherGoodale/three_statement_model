@@ -1,0 +1,24 @@
+# 2026-09-10 - Phase 2: XBRL Concept Discovery
+
+Builds on [`2026-09-10-phase1-extraction.md`](2026-09-10-phase1-extraction.md). Covers `discovery.py` and the parser spike that picked its approach.
+
+## The "Why" (Design Decisions)
+
+**edgartools, chosen over Arelle and direct lxml, without separately installing Arelle.** The spike installed edgartools and ran it against the real anchor filing first; it satisfied every acceptance criterion (statement roles, dimensions, labels, calculation weights) on the first attempt, using one dataframe per statement. Given that, spiking Arelle too would have meant installing a heavier dependency to verify something already answered. The report documents this as a trade-off, not a claim that Arelle was tried and lost — worth knowing if a future filing exposes something edgartools handles badly and Arelle becomes worth a second look.
+
+**A concept's period type (instant vs. duration) is looked up from Phase 1's `facts_long`, not assumed from which statement it's presented on.** First pass got this wrong: it defaulted `period_type` per statement (BS=instant, IS/CF/EQ=duration), which silently mislabeled the Cash Flow Statement's beginning/ending cash memo lines as durations when they're actually instants (a balance at a point in time, just presented inside a duration-statement). Fixed by treating period type as a property of the XBRL concept itself — looked up from any observed companyfacts fact for that concept — since that's what it actually is at the schema level. Caught by a regression test (`test_period_type_prefers_companyfacts_over_statement_default`) before it could propagate into Phase 3's duration-window filtering.
+
+**The Equity statement is filtered differently from the other three.** BS/IS/CF: a dimensional row is disaggregation (segment, tax jurisdiction) and out of scope (spec Sec 4). EQ: the real per-component values (Retained Earnings, APIC, Treasury Stock, ...) *only* exist as `StatementEquityComponentsAxis`-dimensioned rows — there's no non-dimensional "Retained Earnings" line to fall back to. So EQ keeps `dimension==False` (RNCI roll-forward, consolidated totals) *and* the equity-component axis specifically, while still excluding other axes on that statement (`ConsolidatedEntitiesAxis` "Parent Company" duplicates, an equity-method-investee schedule).
+
+## Core Concepts
+
+- **Presentation vs. calculation vs. custom concepts, all resolved by one library call.** Each statement dataframe carries `level`/`parent_concept` (presentation order and hierarchy), `weight` (calculation-linkbase contribution to the parent, sign and all), and `dimension`/`dimension_axis`/`dimension_member` (definition-linkbase dimensional context) together. Grouping face rows by `parent_concept` and summing by `weight` is what builds the formula templates for subtotal lines (e.g. `IS_GROSS_PROFIT = {IS_NET_SALES} - {IS_COST_OF_GOODS_SOLD}`) without hand-parsing the calculation linkbase.
+- **Custom tags confirmed exactly where spec Sec 3 said to expect them:** `site:FinanceLeaseRightofUseAssetAmortizationAndDepreciation` / `site:AmortizationofSoftwareandIntangibleAssets` (the D&A memo lines on the Cash Flow Statement — D&A isn't a face line on the Income Statement) and `site:TemporaryEquityAcquisitionOfNonControllingInterest` / `site:TemporaryEquityDistributionsToNonControllingInterest` (RNCI roll-forward components). All four are absent from `companyfacts` and present via edgartools' instance-document parsing — verified by cross-checking against Phase 1's `facts_long.parquet`, not assumed.
+- **Draft config, not final config.** Every line in `config/line_items.yaml` and every check in `config/templates.yaml` is `status: proposed`. `select_facts.py` (Phase 3) refuses to use anything not `status: approved` (R2) — that approval is a Gate 2 owner action, not something discovery.py does.
+
+## Implementation Breakdown
+
+- `discovery.py`: `face_rows_for_statement()` (the BS/IS/CF vs. EQ filtering split above), `build_line_items_and_checks()` (id generation, fact-vs-formula classification, template construction from parent/weight grouping, unit/period_type inference preferring observed companyfacts data over heuristics), `render_report()`, `run_discovery()` (orchestrates against the live anchor filing via edgartools).
+- `run.py discover` is now wired (previously a stub).
+- Live run against the real FY2025 10-K: 19 IS lines, 39 BS lines, 47 CF lines, 38 EQ lines mapped; 32 dimensional rows explicitly excluded with reasons (segment/tax-jurisdiction/entity axes); zero silently dropped. RNCI's presentation position (between total liabilities and stockholders' equity, per spec Sec 3) came through correctly from edgartools' own ordering, not hand-coded.
+- 6 new unit tests on synthetic fixtures (`test_discovery.py`), including the period-type regression test above.

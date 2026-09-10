@@ -1,0 +1,192 @@
+checks:
+- id: CHK_BS_BALANCE
+  description: Total assets minus (total liabilities + RNCI + total stockholders' equity)
+  status: proposed
+  note: line IDs filled in once BS totals/RNCI/SE line_items are approved (Gate 2)
+- id: CHK_CF_NET_CHANGE
+  description: Sum of CF section totals and reconciling lines minus net change in cash
+  status: proposed
+- id: CHK_CF_CASH_ROLL
+  description: Beginning cash + net change minus ending cash
+  status: proposed
+- id: CHK_CF_CASH_CONTINUITY
+  description: CF beginning cash(t) minus CF ending cash(t-1)
+  status: proposed
+- id: CHK_CASH_TIE
+  description: CF ending cash minus BS cash
+  status: proposed
+  note: blocked on settings.cash_tie.* (still null -- open question, PLAN.md Sec 5 item 5)
+- id: CHK_NI_TIE
+  description: IS consolidated net income minus CF starting net income
+  status: proposed
+- id: CHK_RE_ROLLFORWARD
+  description: Prior retained earnings + approved EQ components minus current retained earnings
+  status: proposed
+  note: 'components: EQ lines dimensioned to StatementEquityComponentsAxis=RetainedEarningsMember'
+- id: CHK_RNCI_ROLLFORWARD
+  description: Prior RNCI + approved EQ components minus current RNCI
+  status: proposed
+  note: 'components: EQ_ACQUISITION_OF_NON_CONTROLLING_INTEREST etc. -- see Hist_EQ non-dimensional rows'
+- id: CHK_SUBTOTAL_IS_GROSS_PROFIT
+  description: Gross profit (formula) vs. reported us-gaap:GrossProfit
+  reported_concepts:
+  - us-gaap:GrossProfit
+  line_id: Hist_IS!IS_GROSS_PROFIT
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_IS_OPERATING_INCOME
+  description: Operating income (formula) vs. reported us-gaap:OperatingIncomeLoss
+  reported_concepts:
+  - us-gaap:OperatingIncomeLoss
+  line_id: Hist_IS!IS_OPERATING_INCOME
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_IS_INCOME_BEFORE_TAXES
+  description: Income before taxes (formula) vs. reported us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest
+  reported_concepts:
+  - us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest
+  line_id: Hist_IS!IS_INCOME_BEFORE_TAXES
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_IS_NET_INCOME
+  description: Net income (formula) vs. reported us-gaap:ProfitLoss
+  reported_concepts:
+  - us-gaap:ProfitLoss
+  line_id: Hist_IS!IS_NET_INCOME
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_IS_NET_INCOME_ATTRIBUTABLE_TO_SITEONE
+  description: Net income attributable to SiteOne (formula) vs. reported us-gaap:NetIncomeLossAvailableToCommonStockholdersBasic
+  reported_concepts:
+  - us-gaap:NetIncomeLossAvailableToCommonStockholdersBasic
+  line_id: Hist_IS!IS_NET_INCOME_ATTRIBUTABLE_TO_SITEONE
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_IS_DILUTED_IN_SHARES
+  description: Diluted (in shares) (formula) vs. reported us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding
+  reported_concepts:
+  - us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding
+  line_id: Hist_IS!IS_DILUTED_IN_SHARES
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_BS_TOTAL_CURRENT_ASSETS
+  description: Total current assets (formula) vs. reported us-gaap:AssetsCurrent
+  reported_concepts:
+  - us-gaap:AssetsCurrent
+  line_id: Hist_BS!BS_TOTAL_CURRENT_ASSETS
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_BS_TOTAL_ASSETS
+  description: Total assets (formula) vs. reported us-gaap:Assets
+  reported_concepts:
+  - us-gaap:Assets
+  line_id: Hist_BS!BS_TOTAL_ASSETS
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_BS_TOTAL_CURRENT_LIABILITIES
+  description: Total current liabilities (formula) vs. reported us-gaap:LiabilitiesCurrent
+  reported_concepts:
+  - us-gaap:LiabilitiesCurrent
+  line_id: Hist_BS!BS_TOTAL_CURRENT_LIABILITIES
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_BS_TOTAL_LIABILITIES
+  description: Total liabilities (formula) vs. reported us-gaap:Liabilities
+  reported_concepts:
+  - us-gaap:Liabilities
+  line_id: Hist_BS!BS_TOTAL_LIABILITIES
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_BS_TOTAL_STOCKHOLDERS_EQUITY
+  description: Total stockholders’ equity (formula) vs. reported us-gaap:StockholdersEquity
+  reported_concepts:
+  - us-gaap:StockholdersEquity
+  line_id: Hist_BS!BS_TOTAL_STOCKHOLDERS_EQUITY
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_BS_TOTAL_LIABILITIES_REDEEMABLE_NON_CONTROLLING_INTEREST_AND_ST
+  description: Total liabilities, redeemable non-controlling interest, and stockholders’ equity (formula)
+    vs. reported us-gaap:LiabilitiesAndStockholdersEquity
+  reported_concepts:
+  - us-gaap:LiabilitiesAndStockholdersEquity
+  line_id: Hist_BS!BS_TOTAL_LIABILITIES_REDEEMABLE_NON_CONTROLLING_INTEREST_AND_ST
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_CF_NET_CASH_PROVIDED_BY_OPERATING_ACTIVITIES
+  description: Net Cash Provided By Operating Activities (formula) vs. reported us-gaap:NetCashProvidedByUsedInOperatingActivities
+  reported_concepts:
+  - us-gaap:NetCashProvidedByUsedInOperatingActivities
+  line_id: Hist_CF!CF_NET_CASH_PROVIDED_BY_OPERATING_ACTIVITIES
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_CF_NET_CASH_USED_IN_INVESTING_ACTIVITIES
+  description: Net Cash Used In Investing Activities (formula) vs. reported us-gaap:NetCashProvidedByUsedInInvestingActivities
+  reported_concepts:
+  - us-gaap:NetCashProvidedByUsedInInvestingActivities
+  line_id: Hist_CF!CF_NET_CASH_USED_IN_INVESTING_ACTIVITIES
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_CF_NET_CASH_USED_IN_FINANCING_ACTIVITIES
+  description: Net Cash Used In Financing Activities (formula) vs. reported us-gaap:NetCashProvidedByUsedInFinancingActivities
+  reported_concepts:
+  - us-gaap:NetCashProvidedByUsedInFinancingActivities
+  line_id: Hist_CF!CF_NET_CASH_USED_IN_FINANCING_ACTIVITIES
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+- id: CHK_SUBTOTAL_CF_NET_CHANGE_IN_CASH
+  description: Net Change In Cash (formula) vs. reported us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect
+  reported_concepts:
+  - us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect
+  line_id: Hist_CF!CF_NET_CHANGE_IN_CASH
+  periods: historical
+  status: proposed
+  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
+    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
+    in Phase 5 once formulas.py's token grammar exists
+drivers: []
+model: []
