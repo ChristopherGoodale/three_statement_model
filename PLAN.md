@@ -55,16 +55,20 @@ No dependency manager beyond plain `pip` + `venv` (matches every other Python pr
 
 Per spec §15, these need the owner's judgment (several require reading SITE's actual 10-K Note 1) before the phases that depend on them can proceed:
 
-1. ~~Dependency manager~~ — **resolved this session:** plain `pip` + `venv`, no uv/poetry.
-2. XBRL parser selection — decided at Gate 2, after the Phase 2 spike (Arelle vs edgartools vs direct `lxml`).
-3. Validation tolerance in $ millions (`settings.validation.tolerance_usd_millions`) — pipeline refuses to validate while this is null.
-4. Include the opening balance sheet column (prior year-end before FY-2)?
-5. Cash-tie target — if the CF cash definition includes restricted cash, which BS line(s) should `CHK_CASH_TIE` reconcile to?
-6. Fiscal-year rule for forecast period dates (confirm the 52/53-week convention from 10-K Note 1), and number of forecast years — Phase 7 refuses to run without this.
-7. Share count display scale.
-8. Scratch and production sheet IDs — **partially resolved this session:** the existing sheet (`1Ptj78386ihOb4BKjSAffDqTz-hZPplJ6Lq9TgXID4po`, already cleared) is `SHEET_ID_PROD`. **Still open:** a new scratch sheet is needed — the service account cannot create Sheets itself (zero Drive storage quota on a personal-account service account), so the owner needs to create a blank Google Sheet, share it with `personal-projects-account@personalprojects-508020.iam.gserviceaccount.com`, and provide the link/ID for `SHEET_ID_SCRATCH`.
-9. Debt definition for the interest-rate driver — term loan + ABL only, or including finance leases?
-10. Final driver list and forecast method per Model line — approved before Phase 7.
+1. ~~Dependency manager~~ — **resolved:** plain `pip` + `venv`, no uv/poetry.
+2. XBRL parser selection — **still open**, decided at Gate 2, after the Phase 2 spike (Arelle vs edgartools vs direct `lxml`). Does not block Phase 1.
+3. ~~Validation tolerance~~ — **resolved:** `0.1` ($ millions), set in `config/settings.yaml`. Does not block Phase 1 (Phase 3).
+4. ~~Include the opening balance sheet column~~ — **resolved: yes.** `periods.include_opening_balance_sheet: true` in `config/settings.yaml` — Phase 1's filing discovery must reach back one more fiscal year-end to cover it.
+5. Cash-tie target — **still open** (`cash_tie.*` left `null` in settings, by design — set at Gate 2 from discovery). Does not block Phase 1.
+6. Fiscal-year rule + forecast years — **still open** (`periods.fiscal_year_rule` / `forecast_years` left `null`). Blocks Phase 7 only, not Phase 1.
+7. ~~Share count display scale~~ — **resolved:** millions, unrounded (`shares_display_scale: 1000000`). Does not block Phase 1.
+8. ~~Scratch and production sheet IDs~~ — **resolved.** `SHEET_ID_PROD = 1Ptj78386ihOb4BKjSAffDqTz-hZPplJ6Lq9TgXID4po` (cleared), `SHEET_ID_SCRATCH = 1Cmm0ZxKPcHht-WXtlmJAyiIuJIxAEt0UDRlfr5mzRcE` (new, shared with the service account and confirmed reachable). Both in `.env` (gitignored). Neither blocks Phase 1 (Sheets writing starts at Phase 4).
+9. Debt definition for the interest-rate driver — **still open.** Blocks Phase 6 (Assumptions drivers) only, not Phase 1.
+10. Final driver list and forecast method per Model line — **still open**, approved before Phase 7.
+
+**New setting added by the owner, not in the original spec (§9.5/§12.3 scope-control note):** `validation.report_all_nonzero_differences: true` in `config/settings.yaml` — `validate.py`'s report should list every check's numeric difference, not just the ones that fail tolerance. Noted here per R12 rather than silently absorbed.
+
+**Remaining Phase-1 blockers: none.** Everything Phase 1 (`config_models.py`, `edgar_client.py`, filing discovery, `companyfacts` extraction) needs is now set: issuer/CIK, `periods.anchor`/`historical_fiscal_years`/`include_opening_balance_sheet`, `sec.*`, `.env` credentials and both sheet IDs. Items 2, 5, 6, 9, 10 above remain genuinely open but gate later phases (2, 3, 6/7), not Phase 1.
 
 ## 6. Explicitly out of scope (v1)
 

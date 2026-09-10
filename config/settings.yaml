@@ -1,0 +1,42 @@
+# config/settings.yaml
+# Non-secret settings only. Credentials, User-Agent, and sheet IDs live in .env.
+# Every null is an open decision; the pipeline must refuse any stage that needs it.
+
+issuer:
+  name: SiteOne Landscape Supply, Inc.
+  cik: "0001650729" # quoted so leading zeros are preserved
+
+periods:
+  anchor: latest_10k # discovered via submissions API; never hardcode dates
+  historical_fiscal_years: 3
+  include_opening_balance_sheet: true # Gate 0 decision
+  forecast_years: null # decide before Phase 7
+  fiscal_year_rule: null # set at Gate 2 from the fiscal-period policy text
+
+sec:
+  max_requests_per_second: 8 # under SEC's 10/sec limit
+  max_retries: 5 # attempts on HTTP 429/5xx before failing (spec 9.1)
+  backoff_base_seconds: 1.0 # exponential backoff: base * 2^attempt
+  cache_dir: data/raw
+
+sheets:
+  default_target: scratch # prod requires --promote
+
+render:
+  usd_display_scale: 1000000 # USD written as $ millions, unrounded
+  shares_display_scale: 1000000 # shares written in millions, unrounded (Gate 0)
+  number_formats:
+    USD: "#,##0.0;(#,##0.0);-"
+    shares: "#,##0.00;(#,##0.00);-"
+    USD/shares: "0.00;(0.00);-"
+    ratio: "0.0%"
+    days: "0.0"
+
+validation:
+  tolerance_usd_millions: 0.1 # Gate 0 decision; applies to USD checks only
+  usd_magnitude_guard: 1000 # nonzero |unscaled USD value| below this fails
+  report_all_nonzero_differences: true # Gate 0 added requirement
+
+cash_tie:
+  cf_ending_cash_line_id: null # set at Gate 2 from discovery
+  bs_cash_line_id: null # set at Gate 2; may become a list if restricted cash exists

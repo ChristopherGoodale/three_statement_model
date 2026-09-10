@@ -19,4 +19,4 @@ Full spec: [docs/SPEC_site_3sm_pipeline.md](docs/SPEC_site_3sm_pipeline.md). Cur
 
 Phase 0 (repo scaffold) is complete. See `PLAN.md` for the phase-by-phase build order and the open questions that need answering before Phase 1 (SEC data extraction) starts.
 
-**Sheets:** production = the original model sheet, now cleared of its legacy (hand-ported) tabs; scratch = _(pending — service accounts can't create their own Sheets, so this needs to be created and shared manually)_.
+**Sheets:** production = the original model sheet, now cleared of its legacy (hand-ported) tabs; scratch = a new sheet, created manually and shared with the service account. Both IDs live in `.env` (gitignored).
