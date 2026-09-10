@@ -1,0 +1,133 @@
+"""CLI entry point (spec Sec 9.9). Every command writes a run manifest (spec Sec 7.4).
+
+Only `extract` is implemented in Phase 1. The rest raise NotImplementedError naming
+the phase that adds them -- see PLAN.md.
+"""
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import json
+import pathlib
+import subprocess
+import sys
+
+from dotenv import load_dotenv
+
+from site3sm.config_models import load_settings
+from site3sm.edgar_client import EdgarClient
+from site3sm.extract import run_extract
+
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+def _git_commit() -> str | None:
+    try:
+        return (
+            subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, stderr=subprocess.DEVNULL)
+            .decode()
+            .strip()
+        )
+    except Exception:
+        return None
+
+
+def _write_manifest(command: str, target_sheet: str | None, extra: dict) -> pathlib.Path:
+    runs_dir = REPO_ROOT / "runs"
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    run_id = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+    manifest = {
+        "run_id": run_id,
+        "git_commit": _git_commit(),
+        "command": " ".join(sys.argv),
+        "target_sheet": target_sheet,
+        **extra,
+    }
+    path = runs_dir / f"manifest_{run_id}.json"
+    path.write_text(json.dumps(manifest, indent=2, default=str), encoding="utf-8")
+    return path
+
+
+def cmd_extract(args: argparse.Namespace) -> None:
+    settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
+    client = EdgarClient(
+        cache_dir=REPO_ROOT / settings.sec.cache_dir,
+        max_requests_per_second=settings.sec.max_requests_per_second,
+        max_retries=settings.sec.max_retries,
+        backoff_base_seconds=settings.sec.backoff_base_seconds,
+        refresh=args.refresh,
+    )
+    facts_long, filings = run_extract(
+        settings,
+        client,
+        staging_path=REPO_ROOT / "data" / "staging" / "facts_long.parquet",
+        reports_dir=REPO_ROOT / "reports",
+    )
+
+    manifest_path = _write_manifest(
+        "extract",
+        target_sheet=None,
+        extra={
+            "filings_used": filings,
+            "fact_counts": {"companyfacts": int(len(facts_long)), "instance": 0},
+            "recasts_logged": 0,
+            "missing_or_custom_lines": [],
+            "validation": {"passed": None, "report": None},
+            "verification": {"passed": None, "report": None},
+        },
+    )
+    print(f"Extracted {len(facts_long)} facts -> data/staging/facts_long.parquet")
+    print(f"Manifest: {manifest_path.relative_to(REPO_ROOT)}")
+
+
+def _not_implemented(phase: str):
+    def handler(_args: argparse.Namespace) -> None:
+        raise NotImplementedError(f"`{phase}` is not implemented yet -- see PLAN.md for phase status.")
+
+    return handler
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="python -m site3sm.run")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    p_extract = sub.add_parser("extract", help="Discover filings and pull companyfacts (Phase 1)")
+    p_extract.add_argument("--refresh", action="store_true", help="Bypass the disk cache")
+    p_extract.set_defaults(func=cmd_extract)
+
+    p_discover = sub.add_parser("discover", help="XBRL concept discovery (Phase 2)")
+    p_discover.set_defaults(func=_not_implemented("discover (Phase 2)"))
+
+    p_select = sub.add_parser("select", help="Select and validate facts (Phase 3)")
+    p_select.set_defaults(func=_not_implemented("select (Phase 3)"))
+
+    p_validate = sub.add_parser("validate", help="Validate accounting identities (Phase 3)")
+    p_validate.set_defaults(func=_not_implemented("validate (Phase 3)"))
+
+    p_build = sub.add_parser("build", help="Render tabs to the sheet (Phase 4+)")
+    p_build.add_argument("--tabs")
+    p_build.add_argument("--dry-run", action="store_true")
+    p_build.add_argument("--promote", action="store_true")
+    p_build.set_defaults(func=_not_implemented("build (Phase 4+)"))
+
+    p_verify = sub.add_parser("verify", help="Read back and verify the sheet (Phase 4+)")
+    p_verify.add_argument("--promote", action="store_true")
+    p_verify.set_defaults(func=_not_implemented("verify (Phase 4+)"))
+
+    p_all = sub.add_parser("all", help="Run every stage in order")
+    p_all.add_argument("--dry-run", action="store_true")
+    p_all.add_argument("--promote", action="store_true")
+    p_all.set_defaults(func=_not_implemented("all (added once every stage exists)"))
+
+    return parser
+
+
+def main(argv: list[str] | None = None) -> None:
+    load_dotenv(REPO_ROOT / ".env")
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()

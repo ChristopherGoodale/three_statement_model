@@ -1,6 +1,6 @@
 # PLAN — SITE Three-Statement Model Pipeline
 
-Status: **Gate 0 — awaiting owner approval.** No pipeline code has been written. See `docs/SPEC_site_3sm_pipeline.md` for the full spec this plan implements.
+Status: **Phase 1 complete, awaiting Gate 1 approval.** Gate 0 cleared (owner answered the Phase-1-blocking open questions in §5). See `docs/SPEC_site_3sm_pipeline.md` for the full spec this plan implements, and the guide entries in `three_statement_model_guide/` for what each phase actually built.
 
 ## 1. Objective (restated)
 
