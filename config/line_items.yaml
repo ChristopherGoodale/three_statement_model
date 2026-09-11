@@ -252,14 +252,12 @@
   - us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding
   period_type: duration
   unit: shares
+  sign: 1
   required: true
   allow_missing: false
   status: approved
-  kind: formula
+  kind: fact
   taxonomy_type: standard
-  template: '{IS_BASIC_IN_SHARES}'
-  reported_concepts:
-  - us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding
 - id: HDR_BS_ASSETS
   tab: Hist_BS
   order: 100
@@ -656,7 +654,7 @@
   unit: USD
   sign: 1
   required: true
-  allow_missing: false
+  allow_missing: true
   status: approved
   kind: fact
   taxonomy_type: standard
@@ -1426,7 +1424,7 @@
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_COMMON_STOCK_COMMON_STOCK_BEGINNING_BALANCE
+- id: EQ_COMMONSTOCKSHARESOUTSTANDING_COMMON_STOCK_COMMON_STOCK_BEGIN
   tab: Hist_EQ
   order: 120
   label: Common Stock - Beginning balance
@@ -1456,7 +1454,7 @@
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_COMMON_STOCK_COMMON_STOCK_BEGINNING_BALANCE_2
+- id: EQ_STOCKHOLDERSEQUITY_COMMON_STOCK_COMMON_STOCK_BEGINNING_BALAN
   tab: Hist_EQ
   order: 140
   label: Common Stock - Beginning balance
@@ -1472,7 +1470,7 @@
     us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
   kind: fact
   taxonomy_type: standard
-- id: EQ_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAID_IN_CAPITAL_BEGINN
+- id: EQ_STOCKHOLDERSEQUITY_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAI
   tab: Hist_EQ
   order: 150
   label: Additional Paid-in Capital - Beginning balance
@@ -1488,7 +1486,7 @@
     us-gaap:StatementEquityComponentsAxis: us-gaap:AdditionalPaidInCapitalMember
   kind: fact
   taxonomy_type: standard
-- id: EQ_RETAINED_EARNINGS_RETAINED_EARNINGS_BEGINNING_BALANCE
+- id: EQ_STOCKHOLDERSEQUITY_RETAINED_EARNINGS_RETAINED_EARNINGS_BEGIN
   tab: Hist_EQ
   order: 160
   label: Retained Earnings - Beginning balance
@@ -1504,7 +1502,7 @@
     us-gaap:StatementEquityComponentsAxis: us-gaap:RetainedEarningsMember
   kind: fact
   taxonomy_type: standard
-- id: EQ_ACCUMULATED_OTHER_COMPREHENSIVE_INCOME_LOSS_ACCUMULATED_OTHE
+- id: EQ_STOCKHOLDERSEQUITY_ACCUMULATED_OTHER_COMPREHENSIVE_INCOME_LO
   tab: Hist_EQ
   order: 170
   label: Accumulated Other Comprehensive Income (Loss) - Beginning balance
@@ -1520,7 +1518,7 @@
     us-gaap:StatementEquityComponentsAxis: us-gaap:AccumulatedOtherComprehensiveIncomeMember
   kind: fact
   taxonomy_type: standard
-- id: EQ_TREASURY_STOCK_TREASURY_STOCK_BEGINNING_BALANCE
+- id: EQ_STOCKHOLDERSEQUITY_TREASURY_STOCK_TREASURY_STOCK_BEGINNING_B
   tab: Hist_EQ
   order: 180
   label: Treasury Stock - Beginning balance
@@ -1550,7 +1548,7 @@
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_RETAINED_EARNINGS_RETAINED_EARNINGS
+- id: EQ_NETINCOMELOSS_RETAINED_EARNINGS_RETAINED_EARNINGS
   tab: Hist_EQ
   order: 200
   label: Retained Earnings
@@ -1580,7 +1578,7 @@
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_ACCUMULATED_OTHER_COMPREHENSIVE_INCOME_LOSS_ACCUMULATED_OTHE_2
+- id: EQ_OTHERCOMPREHENSIVEINCOMELOSSNETOFTAXPORTIONATTRIBUTABLETOPAR
   tab: Hist_EQ
   order: 220
   label: Accumulated Other Comprehensive Income (Loss)
@@ -1606,11 +1604,11 @@
   unit: shares
   sign: 1
   required: true
-  allow_missing: false
+  allow_missing: true
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_COMMON_STOCK_COMMON_STOCK
+- id: EQ_STOCKISSUEDDURINGPERIODSHARESSHAREBASEDCOMPENSATION_COMMON_S
   tab: Hist_EQ
   order: 240
   label: Common Stock
@@ -1640,7 +1638,7 @@
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAID_IN_CAPITAL
+- id: EQ_STOCKISSUEDDURINGPERIODVALUESHAREBASEDCOMPENSATION_ADDITIONA
   tab: Hist_EQ
   order: 260
   label: Additional Paid-in Capital
@@ -1670,7 +1668,7 @@
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAID_IN_CAPITAL_2
+- id: EQ_ADJUSTMENTSTOADDITIONALPAIDINCAPITALSHAREBASEDCOMPENSATIONRE
   tab: Hist_EQ
   order: 280
   label: Additional Paid-in Capital
@@ -1692,21 +1690,21 @@
   label: Repurchases of common stock (in shares)
   concepts:
   - us-gaap:StockRepurchasedDuringPeriodShares
-  period_type: instant
+  period_type: duration
   unit: shares
   sign: 1
   required: true
-  allow_missing: false
+  allow_missing: true
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_COMMON_STOCK_COMMON_STOCK_2
+- id: EQ_STOCKREPURCHASEDDURINGPERIODSHARES_COMMON_STOCK_COMMON_STOCK
   tab: Hist_EQ
   order: 300
   label: Common Stock
   concepts:
   - us-gaap:StockRepurchasedDuringPeriodShares
-  period_type: instant
+  period_type: duration
   unit: shares
   sign: 1
   required: true
@@ -1730,7 +1728,7 @@
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_TREASURY_STOCK_TREASURY_STOCK
+- id: EQ_STOCKREPURCHASEDDURINGPERIODVALUE_TREASURY_STOCK_TREASURY_ST
   tab: Hist_EQ
   order: 320
   label: Treasury Stock
@@ -1760,7 +1758,7 @@
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_COMMON_STOCK_COMMON_STOCK_ENDING_BALANCE
+- id: EQ_COMMONSTOCKSHARESOUTSTANDING_COMMON_STOCK_COMMON_STOCK_ENDIN
   tab: Hist_EQ
   order: 340
   label: Common Stock - Ending balance
@@ -1790,7 +1788,7 @@
   status: approved
   kind: fact
   taxonomy_type: standard
-- id: EQ_COMMON_STOCK_COMMON_STOCK_ENDING_BALANCE_2
+- id: EQ_STOCKHOLDERSEQUITY_COMMON_STOCK_COMMON_STOCK_ENDING_BALANCE
   tab: Hist_EQ
   order: 360
   label: Common Stock - Ending balance
@@ -1806,7 +1804,7 @@
     us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
   kind: fact
   taxonomy_type: standard
-- id: EQ_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAID_IN_CAPITAL_ENDING
+- id: EQ_STOCKHOLDERSEQUITY_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAI_2
   tab: Hist_EQ
   order: 370
   label: Additional Paid-in Capital - Ending balance
@@ -1822,7 +1820,7 @@
     us-gaap:StatementEquityComponentsAxis: us-gaap:AdditionalPaidInCapitalMember
   kind: fact
   taxonomy_type: standard
-- id: EQ_RETAINED_EARNINGS_RETAINED_EARNINGS_ENDING_BALANCE
+- id: EQ_STOCKHOLDERSEQUITY_RETAINED_EARNINGS_RETAINED_EARNINGS_ENDIN
   tab: Hist_EQ
   order: 380
   label: Retained Earnings - Ending balance
@@ -1838,7 +1836,7 @@
     us-gaap:StatementEquityComponentsAxis: us-gaap:RetainedEarningsMember
   kind: fact
   taxonomy_type: standard
-- id: EQ_ACCUMULATED_OTHER_COMPREHENSIVE_INCOME_LOSS_ACCUMULATED_OTHE_3
+- id: EQ_STOCKHOLDERSEQUITY_ACCUMULATED_OTHER_COMPREHENSIVE_INCOME_LO_2
   tab: Hist_EQ
   order: 390
   label: Accumulated Other Comprehensive Income (Loss) - Ending balance
@@ -1854,7 +1852,7 @@
     us-gaap:StatementEquityComponentsAxis: us-gaap:AccumulatedOtherComprehensiveIncomeMember
   kind: fact
   taxonomy_type: standard
-- id: EQ_TREASURY_STOCK_TREASURY_STOCK_ENDING_BALANCE
+- id: EQ_STOCKHOLDERSEQUITY_TREASURY_STOCK_TREASURY_STOCK_ENDING_BALA
   tab: Hist_EQ
   order: 400
   label: Treasury Stock - Ending balance
@@ -1900,7 +1898,7 @@
   unit: USD
   sign: 1
   required: true
-  allow_missing: false
+  allow_missing: true
   status: approved
   kind: fact
   taxonomy_type: standard
@@ -1914,7 +1912,7 @@
   unit: USD
   sign: 1
   required: true
-  allow_missing: false
+  allow_missing: true
   status: approved
   kind: fact
   taxonomy_type: custom
@@ -1942,7 +1940,7 @@
   unit: USD
   sign: 1
   required: true
-  allow_missing: false
+  allow_missing: true
   status: approved
   kind: fact
   taxonomy_type: custom

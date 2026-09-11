@@ -205,7 +205,21 @@ def build_line_items_and_checks(
 
             concept = row["concept"]
             is_formula_line = prefix != "EQ" and concept in parents_with_children and concept not in concept_to_id
-            line_id = f"{prefix}_{_slug(row['label'], used_ids)}"
+            is_eq_dimensioned = prefix == "EQ" and bool(row.get("dimension"))
+
+            if is_eq_dimensioned:
+                # Same label text (e.g. "Common Stock") can legitimately come from
+                # different underlying concepts on this tab (a share-based-comp
+                # issuance row and a repurchase row can both carry a "Common Stock"
+                # dimension member) -- slugging on label alone collided those into
+                # arbitrarily-ordered EQ_..._2/_3 ids that didn't track which
+                # concept they actually meant. Folding the concept's own tag name
+                # into the slug basis keeps ids unique per real underlying fact.
+                concept_tag = concept.split("_", 1)[1] if "_" in concept else concept
+                slug_basis = f"{concept_tag} {row['dimension_member_label']} {row['label']}"
+            else:
+                slug_basis = row["label"]
+            line_id = f"{prefix}_{_slug(slug_basis, used_ids)}"
             row_ids[idx] = line_id
             if concept not in concept_to_id:
                 concept_to_id[concept] = line_id
@@ -223,13 +237,10 @@ def build_line_items_and_checks(
                 "allow_missing": False,
                 "status": "proposed",
             }
-            if prefix == "EQ" and bool(row.get("dimension")):
+            if is_eq_dimensioned:
                 axis = row["dimension_axis"]
                 member = _concept_to_qname(row["dimension_member"])
                 entry["dimensions"] = {axis: member}
-                entry["id"] = f"EQ_{_slug(row['dimension_member_label'] + ' ' + row['label'], used_ids)}"
-                line_id = entry["id"]
-                row_ids[idx] = line_id
 
             entry["kind"] = "formula" if is_formula_line else "fact"
             entry["taxonomy_type"] = _taxonomy_type(concept)
@@ -253,7 +264,16 @@ def build_line_items_and_checks(
         for concept, line_id in concept_to_id.items():
             children = children_by_parent.get(concept)
             entry = by_id.get(line_id)
-            if not children or entry is None or entry["kind"] != "formula":
+            if entry is None or entry["kind"] != "formula":
+                continue
+            if not children or len(children) < 2:
+                # A single-child "sum" is a sign the calculation tree is incomplete
+                # rather than a real subtotal -- observed live: IS_DILUTED_IN_SHARES'
+                # only calc-linkbase child was Basic shares, but diluted also includes
+                # a dilutive-securities effect that isn't its own face line, so a
+                # "formula" built from just the one discoverable child would silently
+                # be wrong. Render it as a plain reported fact instead.
+                entry["kind"] = "fact"
                 continue
             terms = []
             for child_id, weight in children:
@@ -407,11 +427,14 @@ def run_discovery(
     filing, xbrl = _fetch_anchor(settings)
 
     facts_long = pd.read_parquet(staging_path)
-    facts_by_concept = facts_long.drop_duplicates(subset=["concept"]).set_index("concept")
-    companyfacts_units = facts_by_concept["unit"].to_dict()
+    # Mode, not first-occurrence: a concept can have a handful of stray/mistagged
+    # facts using the "wrong" unit or period type (observed live: one instant-tagged
+    # outlier among 17 duration-tagged facts for the same concept). Taking whichever
+    # row happened to sort first previously picked the outlier for that concept.
+    companyfacts_units = facts_long.groupby("concept")["unit"].agg(lambda s: s.mode().iat[0]).to_dict()
     # period_type is a schema-level property of the XBRL element (instant vs duration),
     # so any observed fact for a concept tells us its type for every statement it appears on.
-    companyfacts_period_types = facts_by_concept["period_type"].to_dict()
+    companyfacts_period_types = facts_long.groupby("concept")["period_type"].agg(lambda s: s.mode().iat[0]).to_dict()
     companyfacts_concepts = set(facts_long["concept"].unique())
 
     face_rows_by_stmt: dict[str, pd.DataFrame] = {}

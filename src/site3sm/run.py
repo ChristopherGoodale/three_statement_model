@@ -18,6 +18,8 @@ from site3sm.config_models import load_settings
 from site3sm.discovery import run_discovery, run_instance_extraction
 from site3sm.edgar_client import EdgarClient
 from site3sm.extract import run_extract
+from site3sm.select_facts import determine_target_periods, run_select
+from site3sm.validate import run_validate_and_report
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -137,6 +139,74 @@ def cmd_instance(args: argparse.Namespace) -> None:
     print(f"Manifest: {manifest_path.relative_to(REPO_ROOT)}")
 
 
+def cmd_select(_args: argparse.Namespace) -> None:
+    settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
+    historicals_path, recasts_path = run_select(
+        settings,
+        facts_long_path=REPO_ROOT / "data" / "staging" / "facts_long.parquet",
+        config_dir=REPO_ROOT / "config",
+        curated_dir=REPO_ROOT / "data" / "curated",
+    )
+    import pandas as pd
+
+    curated = pd.read_parquet(historicals_path)
+    n_recasts = int(curated["recast_flag"].sum())
+    manifest_path = _write_manifest(
+        "select",
+        target_sheet=None,
+        extra={
+            "filings_used": [],
+            "fact_counts": {"companyfacts": None, "instance": None},
+            "recasts_logged": n_recasts,
+            "missing_or_custom_lines": [],
+            "validation": {"passed": None, "report": None},
+            "verification": {"passed": None, "report": None},
+        },
+    )
+    print(f"Selected {len(curated)} (line_id, period) rows -> {historicals_path.relative_to(REPO_ROOT)}")
+    print(f"Recast-flagged rows: {n_recasts}")
+    print(f"Manifest: {manifest_path.relative_to(REPO_ROOT)}")
+
+
+def cmd_validate(_args: argparse.Namespace) -> None:
+    import sys as _sys
+
+    import pandas as pd
+
+    import yaml
+
+    settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
+    facts_long = pd.read_parquet(REPO_ROOT / "data" / "staging" / "facts_long.parquet")
+    line_items = yaml.safe_load((REPO_ROOT / "config" / "line_items.yaml").read_text(encoding="utf-8"))
+    duration_ends, instant_ends = determine_target_periods(facts_long, settings, line_items)
+
+    report_path, results = run_validate_and_report(
+        settings,
+        curated_path=REPO_ROOT / "data" / "curated" / "historicals.parquet",
+        config_dir=REPO_ROOT / "config",
+        reports_dir=REPO_ROOT / "reports",
+        instant_ends=instant_ends,
+    )
+    failures = [r for r in results if r["passed"] is False]
+    manifest_path = _write_manifest(
+        "validate",
+        target_sheet=None,
+        extra={
+            "filings_used": [],
+            "fact_counts": {"companyfacts": None, "instance": None},
+            "recasts_logged": 0,
+            "missing_or_custom_lines": [],
+            "validation": {"passed": len(failures) == 0, "report": str(report_path.relative_to(REPO_ROOT))},
+            "verification": {"passed": None, "report": None},
+        },
+    )
+    print(f"Validation report: {report_path.relative_to(REPO_ROOT)}")
+    print(f"{len(failures)} failing check row(s) out of {len(results)}.")
+    print(f"Manifest: {manifest_path.relative_to(REPO_ROOT)}")
+    if failures:
+        _sys.exit(1)
+
+
 def _not_implemented(phase: str):
     def handler(_args: argparse.Namespace) -> None:
         raise NotImplementedError(f"`{phase}` is not implemented yet -- see PLAN.md for phase status.")
@@ -161,11 +231,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_instance.add_argument("--refresh", action="store_true", help="Bypass the disk cache")
     p_instance.set_defaults(func=cmd_instance)
 
-    p_select = sub.add_parser("select", help="Select and validate facts (Phase 3)")
-    p_select.set_defaults(func=_not_implemented("select (Phase 3)"))
+    p_select = sub.add_parser("select", help="Select and dedupe facts into curated historicals (Phase 3)")
+    p_select.set_defaults(func=cmd_select)
 
     p_validate = sub.add_parser("validate", help="Validate accounting identities (Phase 3)")
-    p_validate.set_defaults(func=_not_implemented("validate (Phase 3)"))
+    p_validate.set_defaults(func=cmd_validate)
 
     p_build = sub.add_parser("build", help="Render tabs to the sheet (Phase 4+)")
     p_build.add_argument("--tabs")

@@ -77,16 +77,6 @@ checks:
   note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
     against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
     in Phase 5 once formulas.py's token grammar exists
-- id: CHK_SUBTOTAL_IS_DILUTED_IN_SHARES
-  description: Diluted (in shares) (formula) vs. reported us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding
-  reported_concepts:
-  - us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding
-  line_id: Hist_IS!IS_DILUTED_IN_SHARES
-  periods: historical
-  status: approved
-  note: no sheet-level template yet -- Phase 3 validate.py compares the Python-computed formula value
-    against reported_concepts (spec Sec 9.5 item 1); the live sheet-formula version of this check is finalized
-    in Phase 5 once formulas.py's token grammar exists
 - id: CHK_SUBTOTAL_BS_TOTAL_CURRENT_ASSETS
   description: Total current assets (formula) vs. reported us-gaap:AssetsCurrent
   reported_concepts:
