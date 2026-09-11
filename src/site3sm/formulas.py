@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import re
 
-from site3sm.layout import LayoutError, TabLayout, prev_column
+from site3sm.layout import SCALAR_COL, LayoutError, TabLayout, prev_column
 
 TOKEN_RE = re.compile(r"\{(?:([A-Za-z0-9_]+)!)?([A-Za-z0-9_]+)(?:@(prev|abs))?\}")
 
@@ -39,7 +39,11 @@ def resolve_formula(
         if modifier == "abs":
             if layout.kind_of(line_id) != "scalar":
                 raise LayoutError(f"@abs used on non-scalar line_id: {line_id!r}")
-            return f"'{target_tab}'!${col}${row}"
+            # A scalar lives at one fixed column regardless of which period column's
+            # formula is referencing it -- using the *calling* column here (an
+            # earlier bug) would silently point every period at a different,
+            # mostly-blank cell instead of the one real value.
+            return f"'{target_tab}'!${SCALAR_COL}${row}"
 
         target_col = col
         if modifier == "prev":

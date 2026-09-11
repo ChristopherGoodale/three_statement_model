@@ -13,6 +13,7 @@ import datetime as dt
 
 LABEL_COL, LINE_ID_COL, UNIT_COL, FLAG_COL = "A", "B", "C", "D"
 PERIOD_COLUMN_LETTERS = ["E", "F", "G", "H"]  # opening, FY-2, FY-1, FY0 (Phase 7 extends with I, J, ...)
+SCALAR_COL = "F"  # a kind: scalar cell (e.g. CHK_TOLERANCE) lives at one fixed column, never period-varying
 
 HEADER_ROW_IDS = ["HDR_FISCAL_YEAR_LABEL", "HDR_PERIOD_START", "HDR_PERIOD_END", "HDR_DAYS", "HDR_AE_FLAG"]
 HEADER_ROWS = {hid: i + 1 for i, hid in enumerate(HEADER_ROW_IDS)}  # rows 1-5

@@ -52,9 +52,12 @@ def test_prev_token_cross_tab(layouts):
 
 
 def test_abs_token_on_scalar(layouts):
-    formula = resolve_formula("{Checks!CHK_TOLERANCE@abs}", "Hist_IS", "G", layouts, LETTERS)
     row = layouts["Checks"].row_of("CHK_TOLERANCE")
-    assert formula == f"='Checks'!$G${row}"
+    # a scalar lives at ONE fixed column -- every calling column must resolve to
+    # the same cell, not wherever the calling formula happens to sit
+    for calling_col in ("F", "G", "H"):
+        formula = resolve_formula("{Checks!CHK_TOLERANCE@abs}", "Hist_IS", calling_col, layouts, LETTERS)
+        assert formula == f"='Checks'!$F${row}"
 
 
 def test_multi_token_template(layouts):

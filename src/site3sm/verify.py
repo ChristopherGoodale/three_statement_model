@@ -29,6 +29,19 @@ def _col_letters(a1: str) -> str:
     return "".join(c for c in a1 if c.isalpha())
 
 
+def _normalize_formula(formula) -> str:
+    """Sheets silently drops single-quotes around a sheet name that doesn't need
+    them (no spaces/special characters) when it stores a formula -- 'Hist_BS'!E21
+    round-trips as Hist_BS!E21. That's Sheets' own normalization, not a formula
+    correctness issue (it evaluates identically either way), so comparing formula
+    text has to normalize it out rather than requiring a byte-identical match.
+    Safe to strip every single-quote: none of our formulas use one for anything
+    else (string literals use double quotes, e.g. "OK"/"CHECK")."""
+    if not isinstance(formula, str):
+        return formula
+    return formula.replace("'", "")
+
+
 def _row_num(a1: str) -> int:
     return int("".join(c for c in a1 if c.isdigit()))
 
@@ -77,7 +90,7 @@ def verify_tab(
         actual_formula = cell_at(formulas, a1)
 
         if is_formula:
-            ok = actual_formula == expected["value_or_formula"]
+            ok = _normalize_formula(actual_formula) == _normalize_formula(expected["value_or_formula"])
             results.append(
                 {
                     "check": "formula_text",

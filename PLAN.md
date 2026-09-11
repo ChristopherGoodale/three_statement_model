@@ -1,6 +1,6 @@
 # PLAN — SITE Three-Statement Model Pipeline
 
-Status: **Phase 4b complete, awaiting Gate 4b approval.** Gates 0-3 and 4a cleared. See `docs/SPEC_site_3sm_pipeline.md` for the full spec this plan implements, and the guide entries in `three_statement_model_guide/` for what each phase actually built.
+Status: **Phase 5 complete, awaiting Gate 5 approval.** Gates 0-4b cleared. See `docs/SPEC_site_3sm_pipeline.md` for the full spec this plan implements, and the guide entries in `three_statement_model_guide/` for what each phase actually built.
 
 ## 1. Objective (restated)
 

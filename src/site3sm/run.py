@@ -16,6 +16,7 @@ import sys
 import pandas as pd
 from dotenv import load_dotenv
 
+from site3sm.checks import build_checks_layout, build_checks_write_set
 from site3sm.config_models import load_settings
 from site3sm.discovery import run_discovery, run_instance_extraction
 from site3sm.edgar_client import EdgarClient
@@ -236,9 +237,30 @@ def _build_context(settings):
     return line_items, curated, layouts, period_columns, active_letters, duration_ends
 
 
+def _cash_tie_config(settings) -> tuple[str, str] | None:
+    cf_line = settings.cash_tie.cf_ending_cash_line_id
+    bs_line = settings.cash_tie.bs_cash_line_id
+    if not cf_line or not bs_line:
+        return None
+    return cf_line, bs_line
+
+
 def cmd_build(args: argparse.Namespace) -> None:
     settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
     line_items, curated, layouts, period_columns, active_letters, _duration_ends = _build_context(settings)
+
+    cash_tie = _cash_tie_config(settings)
+    layouts["Checks"] = build_checks_layout(cash_tie_configured=cash_tie is not None)
+    # Hist_* cells hold SCALED values (divided by usd_display_scale, e.g. $455.5
+    # for $455.5M) -- CHK_TOLERANCE has to be in that same scale to compare
+    # against them on the sheet, NOT the raw unscaled dollar tolerance Python's
+    # validate.py uses against curated (unscaled) data. Multiplying by
+    # usd_display_scale here (as an earlier version did) silently made every
+    # check compare a ~$10M-scale diff against a 100,000-scale threshold --
+    # trivially "OK" regardless of the real discrepancy. Caught by reading the
+    # live sheet back and noticing CHK_MASTER said OK when it plainly shouldn't
+    # have for two known-gapped periods.
+    tolerance_scaled = settings.validation.tolerance_usd_millions
 
     target_sheet = "prod" if args.promote else "scratch"
     tabs = [t.strip() for t in args.tabs.split(",")] if args.tabs else sorted(layouts)
@@ -249,6 +271,12 @@ def cmd_build(args: argparse.Namespace) -> None:
         elif tab == "README":
             run_id = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
             write_set.update(build_readme_write_set(run_id, target_sheet))
+        elif tab == "Checks":
+            if tolerance_scaled is None:
+                raise ValueError(
+                    "settings.validation.tolerance_usd_millions is null -- cannot build Checks (spec Sec 8.1)"
+                )
+            write_set.update(build_checks_write_set(layouts, active_letters, cash_tie, tolerance_scaled))
         else:
             write_set.update(
                 build_write_set(tab, line_items, curated, layouts, period_columns, active_letters, settings)
@@ -283,6 +311,12 @@ def cmd_verify(args: argparse.Namespace) -> None:
     settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
     line_items, curated, layouts, period_columns, active_letters, _duration_ends = _build_context(settings)
 
+    cash_tie = _cash_tie_config(settings)
+    layouts["Checks"] = build_checks_layout(cash_tie_configured=cash_tie is not None)
+    # See the matching comment in cmd_build: must match the SCALE of Hist_* cells
+    # (already divided by usd_display_scale), not the raw unscaled tolerance.
+    tolerance_scaled = settings.validation.tolerance_usd_millions
+
     # README is excluded: its content (last run ID) is a snapshot of whatever build
     # run wrote it, not a deterministic function of the data -- re-verifying it
     # would just compare against a freshly-generated, different run ID every time.
@@ -291,6 +325,9 @@ def cmd_verify(args: argparse.Namespace) -> None:
     for tab in tabs:
         if tab == "Sources":
             write_set.update(build_sources_write_set(curated, line_items))
+        elif tab == "Checks":
+            if tolerance_scaled is not None:
+                write_set.update(build_checks_write_set(layouts, active_letters, cash_tie, tolerance_scaled))
         else:
             write_set.update(
                 build_write_set(tab, line_items, curated, layouts, period_columns, active_letters, settings)
