@@ -8,18 +8,23 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import pathlib
 import subprocess
 import sys
 
+import pandas as pd
 from dotenv import load_dotenv
 
 from site3sm.config_models import load_settings
 from site3sm.discovery import run_discovery, run_instance_extraction
 from site3sm.edgar_client import EdgarClient
 from site3sm.extract import run_extract
+from site3sm.layout import TabLayout, build_period_columns
 from site3sm.select_facts import determine_target_periods, run_select
+from site3sm.sheets_writer import SheetsWriter, build_write_set, write_dry_run
 from site3sm.validate import run_validate_and_report
+from site3sm.verify import run_verify
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -207,6 +212,99 @@ def cmd_validate(_args: argparse.Namespace) -> None:
         _sys.exit(1)
 
 
+def _build_context(settings):
+    import yaml
+
+    line_items = yaml.safe_load((REPO_ROOT / "config" / "line_items.yaml").read_text(encoding="utf-8"))
+    curated = pd.read_parquet(REPO_ROOT / "data" / "curated" / "historicals.parquet")
+
+    instant_ends = sorted(curated.loc[curated["days"].isna(), "period_end"].dropna().unique())
+    duration_ends = sorted(curated.loc[curated["days"].notna(), "period_end"].dropna().unique())
+
+    tabs_in_config = sorted({li["tab"] for li in line_items if "tab" in li})
+    layouts = {tab: TabLayout(tab, line_items) for tab in tabs_in_config}
+
+    period_columns = build_period_columns(instant_ends, settings.periods.include_opening_balance_sheet)
+    active_letters = ["E", "F", "G", "H"] if settings.periods.include_opening_balance_sheet else ["F", "G", "H"]
+
+    return line_items, curated, layouts, period_columns, active_letters, duration_ends
+
+
+def cmd_build(args: argparse.Namespace) -> None:
+    settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
+    line_items, curated, layouts, period_columns, active_letters, _duration_ends = _build_context(settings)
+
+    tabs = [t.strip() for t in args.tabs.split(",")] if args.tabs else sorted(layouts)
+    write_set: dict = {}
+    for tab in tabs:
+        write_set.update(
+            build_write_set(tab, line_items, curated, layouts, period_columns, active_letters, settings)
+        )
+
+    target_sheet = "prod" if args.promote else "scratch"
+
+    if args.dry_run:
+        plan_path = write_dry_run(write_set, REPO_ROOT / "reports")
+        print(f"Dry-run plan ({len(write_set)} cells): {plan_path.relative_to(REPO_ROOT)}")
+    else:
+        sheet_id = os.environ["SHEET_ID_PROD"] if args.promote else os.environ["SHEET_ID_SCRATCH"]
+        credentials_path = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+        writer = SheetsWriter(credentials_path)
+        writer.write(sheet_id, write_set)
+        print(f"Wrote {len(write_set)} cells to {target_sheet} ({', '.join(tabs)})")
+
+    manifest_path = _write_manifest(
+        "build",
+        target_sheet=target_sheet,
+        extra={
+            "filings_used": [],
+            "fact_counts": {"companyfacts": None, "instance": None},
+            "recasts_logged": 0,
+            "missing_or_custom_lines": [],
+            "validation": {"passed": None, "report": None},
+            "verification": {"passed": None, "report": None},
+        },
+    )
+    print(f"Manifest: {manifest_path.relative_to(REPO_ROOT)}")
+
+
+def cmd_verify(args: argparse.Namespace) -> None:
+    settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
+    line_items, curated, layouts, period_columns, active_letters, _duration_ends = _build_context(settings)
+
+    tabs = sorted(layouts)
+    write_set: dict = {}
+    for tab in tabs:
+        write_set.update(
+            build_write_set(tab, line_items, curated, layouts, period_columns, active_letters, settings)
+        )
+
+    target_sheet = "prod" if args.promote else "scratch"
+    sheet_id = os.environ["SHEET_ID_PROD"] if args.promote else os.environ["SHEET_ID_SCRATCH"]
+    credentials_path = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+
+    report_path, results = run_verify(sheet_id, write_set, credentials_path, REPO_ROOT / "reports")
+    failures = [r for r in results if r["passed"] is False]
+
+    manifest_path = _write_manifest(
+        "verify",
+        target_sheet=target_sheet,
+        extra={
+            "filings_used": [],
+            "fact_counts": {"companyfacts": None, "instance": None},
+            "recasts_logged": 0,
+            "missing_or_custom_lines": [],
+            "validation": {"passed": None, "report": None},
+            "verification": {"passed": len(failures) == 0, "report": str(report_path.relative_to(REPO_ROOT))},
+        },
+    )
+    print(f"Verify report: {report_path.relative_to(REPO_ROOT)}")
+    print(f"{len(failures)} failing check(s) out of {len(results)}.")
+    print(f"Manifest: {manifest_path.relative_to(REPO_ROOT)}")
+    if failures:
+        sys.exit(1)
+
+
 def _not_implemented(phase: str):
     def handler(_args: argparse.Namespace) -> None:
         raise NotImplementedError(f"`{phase}` is not implemented yet -- see PLAN.md for phase status.")
@@ -241,11 +339,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_build.add_argument("--tabs")
     p_build.add_argument("--dry-run", action="store_true")
     p_build.add_argument("--promote", action="store_true")
-    p_build.set_defaults(func=_not_implemented("build (Phase 4+)"))
+    p_build.set_defaults(func=cmd_build)
 
     p_verify = sub.add_parser("verify", help="Read back and verify the sheet (Phase 4+)")
     p_verify.add_argument("--promote", action="store_true")
-    p_verify.set_defaults(func=_not_implemented("verify (Phase 4+)"))
+    p_verify.set_defaults(func=cmd_verify)
 
     p_all = sub.add_parser("all", help="Run every stage in order")
     p_all.add_argument("--dry-run", action="store_true")
