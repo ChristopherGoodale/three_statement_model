@@ -7,11 +7,14 @@ Parser: edgartools (see PARSER_SPIKE_NOTES below for why).
 from __future__ import annotations
 
 import datetime as dt
+import json
 import pathlib
 import re
 
 import pandas as pd
 import yaml
+
+from site3sm.extract import FACTS_LONG_COLUMNS
 
 from site3sm.config_models import Settings
 
@@ -379,12 +382,7 @@ def render_report(
     return "\n".join(lines)
 
 
-def run_discovery(
-    settings: Settings,
-    config_dir: str | pathlib.Path = "config",
-    reports_dir: str | pathlib.Path = "reports",
-    staging_path: str | pathlib.Path = "data/staging/facts_long.parquet",
-) -> pathlib.Path:
+def _fetch_anchor(settings: Settings):
     import os
 
     from dotenv import load_dotenv
@@ -397,6 +395,16 @@ def run_discovery(
     company = Company(settings.issuer.cik10)
     filing = company.get_filings(form="10-K").head(1)[0]
     xbrl = filing.xbrl()
+    return filing, xbrl
+
+
+def run_discovery(
+    settings: Settings,
+    config_dir: str | pathlib.Path = "config",
+    reports_dir: str | pathlib.Path = "reports",
+    staging_path: str | pathlib.Path = "data/staging/facts_long.parquet",
+) -> pathlib.Path:
+    filing, xbrl = _fetch_anchor(settings)
 
     facts_long = pd.read_parquet(staging_path)
     facts_by_concept = facts_long.drop_duplicates(subset=["concept"]).set_index("concept")
@@ -447,3 +455,96 @@ def run_discovery(
     )
 
     return report_path
+
+
+def extract_instance_facts(
+    xbrl, filing, client, line_items: list[dict], cik_int: int
+) -> pd.DataFrame:
+    """Pull real values (not just structure) for line_items that companyfacts can't
+    provide: custom-taxonomy concepts and dimensional facts (spec Sec 9.2 "Instance
+    facts"). Uses `xbrl.facts` -- a raw, filing-level fact view with true period
+    start/end/instant dates and resolved dimension members -- rather than reconstructing
+    dates from the statement dataframes' column headers (which only carry the period
+    *end*, not enough to compute `days`).
+
+    Only pulls facts for lines that actually need it (taxonomy_type == custom, or a
+    `dimensions` mapping is set) -- standard, non-dimensional concepts already come
+    from companyfacts in Phase 1 and pulling them again here would just create a second,
+    redundant source for the same value.
+    """
+    fdf = xbrl.facts.to_dataframe()
+    accn_nodash = filing.accession_no.replace("-", "")
+    _, raw_path = client.filing_index(cik_int, accn_nodash)
+
+    rows: list[dict] = []
+    for li in line_items:
+        if "concepts" not in li:
+            continue
+        taxonomy_type = li.get("taxonomy_type", "standard")
+        dimensions = li.get("dimensions") or {}
+        if taxonomy_type != "custom" and not dimensions:
+            continue  # covered by companyfacts already
+
+        concept = li["concepts"][0]
+        subset = fdf[fdf["concept"] == concept]
+        if dimensions:
+            (axis, member), = dimensions.items()
+            subset = subset[
+                subset["is_dimensioned"].fillna(False)
+                & (subset["dimension"] == axis)
+                & (subset["member"] == member)
+            ]
+        else:
+            subset = subset[~subset["is_dimensioned"].fillna(False)]
+
+        for _, row in subset.iterrows():
+            if row["period_type"] == "instant":
+                end_raw, start = row["period_instant"], None
+            else:
+                end_raw, start = row["period_end"], row["period_start"]
+            if pd.isna(end_raw):
+                continue
+            end = pd.Timestamp(end_raw).date()
+            start_date = pd.Timestamp(start).date() if start is not None and pd.notna(start) else None
+            rows.append(
+                {
+                    "concept": concept,
+                    "taxonomy_type": taxonomy_type,
+                    "dimensions": json.dumps(dimensions) if dimensions else "{}",
+                    "unit": li["unit"],
+                    "period_type": row["period_type"],
+                    "start": start_date,
+                    "end": end,
+                    "days": (end - start_date).days + 1 if start_date else None,
+                    "val": row["numeric_value"],
+                    "accn": filing.accession_no,
+                    "form": filing.form,
+                    "filed": filing.filing_date,
+                    "source": "instance",
+                    "raw_path": str(raw_path),
+                }
+            )
+
+    return pd.DataFrame(rows, columns=FACTS_LONG_COLUMNS).drop_duplicates().reset_index(drop=True)
+
+
+def run_instance_extraction(
+    settings: Settings,
+    client,
+    config_dir: str | pathlib.Path = "config",
+    staging_path: str | pathlib.Path = "data/staging/facts_long.parquet",
+) -> pd.DataFrame:
+    """Re-fetch the anchor filing and merge instance-sourced facts (for approved
+    custom/dimensional line_items) into facts_long.parquet. Run this after Gate 2
+    approval -- proposed-but-unapproved lines are skipped (R2)."""
+    line_items = yaml.safe_load((pathlib.Path(config_dir) / "line_items.yaml").read_text(encoding="utf-8"))
+    approved = [li for li in line_items if li.get("status") == "approved"]
+
+    filing, xbrl = _fetch_anchor(settings)
+    instance_facts = extract_instance_facts(xbrl, filing, client, approved, int(settings.issuer.cik))
+
+    staging_path = pathlib.Path(staging_path)
+    existing = pd.read_parquet(staging_path)
+    merged = pd.concat([existing, instance_facts], ignore_index=True).drop_duplicates().reset_index(drop=True)
+    merged.to_parquet(staging_path, index=False)
+    return instance_facts

@@ -15,7 +15,7 @@ import sys
 from dotenv import load_dotenv
 
 from site3sm.config_models import load_settings
-from site3sm.discovery import run_discovery
+from site3sm.discovery import run_discovery, run_instance_extraction
 from site3sm.edgar_client import EdgarClient
 from site3sm.extract import run_extract
 
@@ -106,6 +106,37 @@ def cmd_discover(_args: argparse.Namespace) -> None:
     print(f"Manifest: {manifest_path.relative_to(REPO_ROOT)}")
 
 
+def cmd_instance(args: argparse.Namespace) -> None:
+    settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
+    client = EdgarClient(
+        cache_dir=REPO_ROOT / settings.sec.cache_dir,
+        max_requests_per_second=settings.sec.max_requests_per_second,
+        max_retries=settings.sec.max_retries,
+        backoff_base_seconds=settings.sec.backoff_base_seconds,
+        refresh=args.refresh,
+    )
+    instance_facts = run_instance_extraction(
+        settings,
+        client,
+        config_dir=REPO_ROOT / "config",
+        staging_path=REPO_ROOT / "data" / "staging" / "facts_long.parquet",
+    )
+    manifest_path = _write_manifest(
+        "instance",
+        target_sheet=None,
+        extra={
+            "filings_used": [],
+            "fact_counts": {"companyfacts": None, "instance": int(len(instance_facts))},
+            "recasts_logged": 0,
+            "missing_or_custom_lines": [],
+            "validation": {"passed": None, "report": None},
+            "verification": {"passed": None, "report": None},
+        },
+    )
+    print(f"Extracted {len(instance_facts)} instance-sourced facts, merged into data/staging/facts_long.parquet")
+    print(f"Manifest: {manifest_path.relative_to(REPO_ROOT)}")
+
+
 def _not_implemented(phase: str):
     def handler(_args: argparse.Namespace) -> None:
         raise NotImplementedError(f"`{phase}` is not implemented yet -- see PLAN.md for phase status.")
@@ -123,6 +154,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_discover = sub.add_parser("discover", help="XBRL concept discovery (Phase 2)")
     p_discover.set_defaults(func=cmd_discover)
+
+    p_instance = sub.add_parser(
+        "instance", help="Pull real values for approved custom/dimensional lines (Phase 2, post Gate-2)"
+    )
+    p_instance.add_argument("--refresh", action="store_true", help="Bypass the disk cache")
+    p_instance.set_defaults(func=cmd_instance)
 
     p_select = sub.add_parser("select", help="Select and validate facts (Phase 3)")
     p_select.set_defaults(func=_not_implemented("select (Phase 3)"))

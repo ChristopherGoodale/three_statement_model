@@ -16,6 +16,41 @@ Builds on [`2026-09-10-phase1-extraction.md`](2026-09-10-phase1-extraction.md). 
 - **Custom tags confirmed exactly where spec Sec 3 said to expect them:** `site:FinanceLeaseRightofUseAssetAmortizationAndDepreciation` / `site:AmortizationofSoftwareandIntangibleAssets` (the D&A memo lines on the Cash Flow Statement — D&A isn't a face line on the Income Statement) and `site:TemporaryEquityAcquisitionOfNonControllingInterest` / `site:TemporaryEquityDistributionsToNonControllingInterest` (RNCI roll-forward components). All four are absent from `companyfacts` and present via edgartools' instance-document parsing — verified by cross-checking against Phase 1's `facts_long.parquet`, not assumed.
 - **Draft config, not final config.** Every line in `config/line_items.yaml` and every check in `config/templates.yaml` is `status: proposed`. `select_facts.py` (Phase 3) refuses to use anything not `status: approved` (R2) — that approval is a Gate 2 owner action, not something discovery.py does.
 
+## Addendum: instance-fact extraction (post Gate-2)
+
+Discovery only established which lines *need* instance-sourced values (custom tags,
+EQ's `StatementEquityComponentsAxis` dimensions) -- it didn't pull the actual numbers
+into `facts_long`. That's a real gap: without it, `select_facts.py` would raise
+"missing required fact" on every one of the ~40 EQ lines and 2 custom CF lines the
+moment Phase 3 tried to use them. Closed it with `extract_instance_facts()` +
+`run.py instance`, run once the config was approved.
+
+**Used `xbrl.facts.to_dataframe()` instead of the statement dataframes' column headers.**
+The statement views (used for discovery) only label period *columns* with the fiscal
+year-end date -- not enough to compute `days` for a duration fact without guessing a
+start date, which is exactly the fiscal-year-convention question still open (PLAN.md
+Sec 5 item 6). `xbrl.facts` is a lower-level, filing-wide raw fact view with true
+`period_start`/`period_end` (durations) or `period_instant` (instants) taken directly
+from the instance document's contexts -- no guessing needed.
+
+**A synthetic-fixture test caught a real bug before the first commit of this code.**
+The first pass guarded the dimensional-match branch with `if f"dim_{axis}" not in
+subset.columns: continue` -- a leftover from an earlier approach that turned out to be
+both unnecessary (filtering already happens via the `dimension`/`member` columns
+directly) and actively wrong (it silently skipped every dimensional match whenever that
+particular axis wasn't among edgartools' fixed set of pre-materialized `dim_*` columns).
+It happened not to trigger against the live anchor filing's very common
+`StatementEquityComponentsAxis`, so the live run "worked" while still being wrong in
+general. `test_extract_instance_facts_only_pulls_custom_and_dimensional_lines` failed
+immediately on a minimal synthetic fixture and pointed straight at the dead check.
+
+Result: 53 instance-sourced rows merged into `facts_long.parquet` -- the 2 custom D&A
+memo lines (3 years each) and every `StatementEquityComponentsAxis` component (Common
+Stock, APIC, Retained Earnings, AOCI, Treasury Stock; 4 instant dates + 3 duration-activity
+facts each) plus the 2 custom RNCI roll-forward lines. Spot-checked Retained Earnings
+($742.9M / $916.3M / $1,039.9M / $1,191.7M across the 4 instant dates) against the
+earlier hand-built xlsx -- matches.
+
 ## Implementation Breakdown
 
 - `discovery.py`: `face_rows_for_statement()` (the BS/IS/CF vs. EQ filtering split above), `build_line_items_and_checks()` (id generation, fact-vs-formula classification, template construction from parent/weight grouping, unit/period_type inference preferring observed companyfacts data over heuristics), `render_report()`, `run_discovery()` (orchestrates against the live anchor filing via edgartools).
