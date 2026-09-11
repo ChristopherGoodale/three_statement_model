@@ -9,7 +9,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: IS_COST_OF_GOODS_SOLD
@@ -23,7 +23,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: IS_GROSS_PROFIT
@@ -36,7 +36,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{IS_NET_SALES} - {IS_COST_OF_GOODS_SOLD}'
@@ -53,7 +53,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: IS_OTHER_INCOME
@@ -67,7 +67,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: IS_OPERATING_INCOME
@@ -80,7 +80,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{IS_GROSS_PROFIT} - {IS_SELLING_GENERAL_AND_ADMINISTRATIVE_EXPENSES} + {IS_OTHER_INCOME}'
@@ -97,7 +97,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: IS_INCOME_BEFORE_TAXES
@@ -110,7 +110,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{IS_OPERATING_INCOME} - {IS_INTEREST_AND_OTHER_NON_OPERATING_EXPENSES_NET}'
@@ -127,7 +127,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: IS_NET_INCOME
@@ -140,7 +140,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{IS_INCOME_BEFORE_TAXES} - {IS_INCOME_TAX_EXPENSE}'
@@ -157,7 +157,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: IS_ADJUSTMENT_OF_NON_CONTROLLING_INTEREST_TO_REDEMPTION_VALUE
@@ -171,7 +171,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: IS_NET_INCOME_ATTRIBUTABLE_TO_SITEONE
@@ -184,7 +184,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{IS_NET_INCOME} - {IS_NET_INCOME_ATTRIBUTABLE_TO_NON_CONTROLLING_INTEREST} - {IS_ADJUSTMENT_OF_NON_CONTROLLING_INTEREST_TO_REDEMPTION_VALUE}'
@@ -195,7 +195,7 @@
   order: 230
   label: 'Net income per common share:'
   kind: header
-  status: proposed
+  status: approved
 - id: IS_BASIC_IN_DOLLARS_PER_SHARE
   tab: Hist_IS
   order: 240
@@ -207,7 +207,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: IS_DILUTED_IN_DOLLARS_PER_SHARE
@@ -221,7 +221,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: HDR_IS_WEIGHTED_AVERAGE_NUMBER_OF_COMMON_SHARES_OUTSTANDING
@@ -229,7 +229,7 @@
   order: 260
   label: 'Weighted average number of common shares outstanding:'
   kind: header
-  status: proposed
+  status: approved
 - id: IS_BASIC_IN_SHARES
   tab: Hist_IS
   order: 270
@@ -241,7 +241,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: IS_DILUTED_IN_SHARES
@@ -254,7 +254,7 @@
   unit: shares
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{IS_BASIC_IN_SHARES}'
@@ -265,13 +265,13 @@
   order: 100
   label: Assets
   kind: header
-  status: proposed
+  status: approved
 - id: HDR_BS_CURRENT_ASSETS
   tab: Hist_BS
   order: 110
   label: 'Current assets:'
   kind: header
-  status: proposed
+  status: approved
 - id: BS_CASH_AND_CASH_EQUIVALENTS
   tab: Hist_BS
   order: 120
@@ -283,7 +283,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_ACCOUNTS_RECEIVABLE_NET_OF_ALLOWANCE_FOR_DOUBTFUL_ACCOUNTS_O
@@ -297,7 +297,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_INVENTORY_NET
@@ -311,7 +311,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_INCOME_TAX_RECEIVABLE
@@ -325,7 +325,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_PREPAID_EXPENSES_AND_OTHER_CURRENT_ASSETS
@@ -339,7 +339,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_TOTAL_CURRENT_ASSETS
@@ -352,7 +352,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{BS_CASH_AND_CASH_EQUIVALENTS} + {BS_ACCOUNTS_RECEIVABLE_NET_OF_ALLOWANCE_FOR_DOUBTFUL_ACCOUNTS_O}
@@ -370,7 +370,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_OPERATING_LEASE_RIGHT_OF_USE_ASSETS_NET
@@ -384,7 +384,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_GOODWILL
@@ -398,7 +398,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_INTANGIBLE_ASSETS_NET
@@ -412,7 +412,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_DEFERRED_TAX_ASSETS
@@ -426,7 +426,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_OTHER_ASSETS
@@ -440,7 +440,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_TOTAL_ASSETS
@@ -453,7 +453,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{BS_TOTAL_CURRENT_ASSETS} + {BS_PROPERTY_AND_EQUIPMENT_NET} + {BS_OPERATING_LEASE_RIGHT_OF_USE_ASSETS_NET}
@@ -465,13 +465,13 @@
   order: 250
   label: Liabilities, Redeemable Non-controlling Interest, and Stockholders' Equity
   kind: header
-  status: proposed
+  status: approved
 - id: HDR_BS_CURRENT_LIABILITIES
   tab: Hist_BS
   order: 260
   label: 'Current liabilities:'
   kind: header
-  status: proposed
+  status: approved
 - id: BS_ACCOUNTS_PAYABLE
   tab: Hist_BS
   order: 270
@@ -483,7 +483,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_CURRENT_PORTION_OF_FINANCE_LEASES
@@ -497,7 +497,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_CURRENT_PORTION_OF_OPERATING_LEASES
@@ -511,7 +511,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_ACCRUED_COMPENSATION
@@ -525,7 +525,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_LONG_TERM_DEBT_CURRENT_PORTION
@@ -539,7 +539,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_ACCRUED_LIABILITIES
@@ -553,7 +553,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_TOTAL_CURRENT_LIABILITIES
@@ -566,7 +566,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{BS_ACCOUNTS_PAYABLE} + {BS_CURRENT_PORTION_OF_FINANCE_LEASES} + {BS_CURRENT_PORTION_OF_OPERATING_LEASES}
@@ -584,7 +584,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_FINANCE_LEASES_LESS_CURRENT_PORTION
@@ -598,7 +598,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_OPERATING_LEASES_LESS_CURRENT_PORTION
@@ -612,7 +612,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_LONG_TERM_DEBT_LESS_CURRENT_PORTION
@@ -626,7 +626,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_TOTAL_LIABILITIES
@@ -639,7 +639,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{BS_TOTAL_CURRENT_LIABILITIES} + {BS_OTHER_LONG_TERM_LIABILITIES} + {BS_FINANCE_LEASES_LESS_CURRENT_PORTION}
@@ -657,7 +657,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_REDEEMABLE_NON_CONTROLLING_INTEREST
@@ -671,7 +671,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: HDR_BS_STOCKHOLDERS_EQUITY
@@ -679,7 +679,7 @@
   order: 410
   label: 'Stockholders’ equity (Note 1):'
   kind: header
-  status: proposed
+  status: approved
 - id: BS_COMMON_STOCK_PAR_VALUE_0_01_1_000_000_000_SHARES_AUTHORIZED_
   tab: Hist_BS
   order: 420
@@ -693,7 +693,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_ADDITIONAL_PAID_IN_CAPITAL
@@ -707,7 +707,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_RETAINED_EARNINGS
@@ -721,7 +721,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_ACCUMULATED_OTHER_COMPREHENSIVE_LOSS
@@ -735,7 +735,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_TREASURY_STOCK_AT_COST_1_505_352_AND_688_464_SHARES_AT_DECEM
@@ -750,7 +750,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: BS_TOTAL_STOCKHOLDERS_EQUITY
@@ -763,7 +763,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{BS_COMMON_STOCK_PAR_VALUE_0_01_1_000_000_000_SHARES_AUTHORIZED_} + {BS_ADDITIONAL_PAID_IN_CAPITAL}
@@ -780,7 +780,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{BS_TOTAL_LIABILITIES} + {BS_COMMITMENTS_AND_CONTINGENCIES} + {BS_REDEEMABLE_NON_CONTROLLING_INTEREST}
@@ -792,7 +792,7 @@
   order: 100
   label: 'Cash Flows from Operating Activities:'
   kind: header
-  status: proposed
+  status: approved
 - id: CF_NET_INCOME
   tab: Hist_CF
   order: 110
@@ -804,7 +804,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: HDR_CF_ADJUSTMENTS_TO_RECONCILE_NET_INCOME_TO_NET_CASH_PROVIDED_BY_
@@ -812,7 +812,7 @@
   order: 120
   label: 'Adjustments to reconcile Net income to net cash provided by operating activities:'
   kind: header
-  status: proposed
+  status: approved
 - id: CF_AMORTIZATION_OF_FINANCE_LEASE_RIGHT_OF_USE_ASSETS_AND_DEPREC
   tab: Hist_CF
   order: 130
@@ -824,7 +824,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: custom
 - id: CF_STOCK_BASED_COMPENSATION
@@ -838,7 +838,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_AMORTIZATION_OF_SOFTWARE_AND_INTANGIBLE_ASSETS
@@ -852,7 +852,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: custom
 - id: CF_AMORTIZATION_OF_DEBT_RELATED_COSTS
@@ -866,7 +866,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_LOSS_ON_EXTINGUISHMENT_OF_DEBT
@@ -880,7 +880,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_GAIN_LOSS_ON_SALE_OF_EQUIPMENT
@@ -894,7 +894,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_DEFERRED_INCOME_TAXES
@@ -908,7 +908,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_OTHER
@@ -922,7 +922,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: HDR_CF_CHANGES_IN_OPERATING_ASSETS_AND_LIABILITIES_NET_OF_THE_EFFEC
@@ -930,7 +930,7 @@
   order: 210
   label: 'Changes in operating assets and liabilities, net of the effects of acquisitions:'
   kind: header
-  status: proposed
+  status: approved
 - id: CF_RECEIVABLES
   tab: Hist_CF
   order: 220
@@ -942,7 +942,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_INVENTORY
@@ -956,7 +956,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_INCOME_TAX_RECEIVABLE
@@ -970,7 +970,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_PREPAID_EXPENSES_AND_OTHER_ASSETS
@@ -984,7 +984,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_ACCOUNTS_PAYABLE
@@ -998,7 +998,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_INCOME_TAX_PAYABLE
@@ -1012,7 +1012,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_ACCRUED_EXPENSES_AND_OTHER_LIABILITIES
@@ -1026,7 +1026,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_NET_CASH_PROVIDED_BY_OPERATING_ACTIVITIES
@@ -1039,7 +1039,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{CF_NET_INCOME} + {CF_AMORTIZATION_OF_FINANCE_LEASE_RIGHT_OF_USE_ASSETS_AND_DEPREC} + {CF_STOCK_BASED_COMPENSATION}
@@ -1054,7 +1054,7 @@
   order: 300
   label: 'Cash Flows from Investing Activities:'
   kind: header
-  status: proposed
+  status: approved
 - id: CF_PURCHASES_OF_PROPERTY_AND_EQUIPMENT
   tab: Hist_CF
   order: 310
@@ -1066,7 +1066,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_PURCHASES_OF_INTANGIBLE_ASSETS
@@ -1080,7 +1080,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_ACQUISITIONS_NET_OF_CASH_ACQUIRED
@@ -1094,7 +1094,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_PROCEEDS_FROM_THE_SALE_OF_PROPERTY_AND_EQUIPMENT
@@ -1108,7 +1108,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_NET_CASH_USED_IN_INVESTING_ACTIVITIES
@@ -1121,7 +1121,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '- {CF_PURCHASES_OF_PROPERTY_AND_EQUIPMENT} - {CF_PURCHASES_OF_INTANGIBLE_ASSETS} - {CF_ACQUISITIONS_NET_OF_CASH_ACQUIRED}
@@ -1133,7 +1133,7 @@
   order: 360
   label: 'Cash Flows from Financing Activities:'
   kind: header
-  status: proposed
+  status: approved
 - id: CF_EQUITY_PROCEEDS_FROM_COMMON_STOCK
   tab: Hist_CF
   order: 370
@@ -1145,7 +1145,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_REPURCHASES_OF_COMMON_SHARES
@@ -1159,7 +1159,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_DISTRIBUTIONS_TO_NON_CONTROLLING_INTEREST
@@ -1173,7 +1173,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_BORROWINGS_UNDER_TERM_LOAN
@@ -1187,7 +1187,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_REPAYMENTS_UNDER_TERM_LOAN
@@ -1201,7 +1201,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_BORROWINGS_ON_ASSET_BASED_CREDIT_FACILITIES
@@ -1215,7 +1215,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_REPAYMENTS_ON_ASSET_BASED_CREDIT_FACILITIES
@@ -1229,7 +1229,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_PAYMENTS_OF_DEBT_ISSUANCE_COSTS
@@ -1243,7 +1243,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_PAYMENTS_ON_FINANCE_LEASE_OBLIGATIONS
@@ -1257,7 +1257,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_PAYMENTS_OF_ACQUISITION_RELATED_CONTINGENT_OBLIGATIONS
@@ -1271,7 +1271,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_OTHER_FINANCING_ACTIVITIES
@@ -1285,7 +1285,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_NET_CASH_USED_IN_FINANCING_ACTIVITIES
@@ -1298,7 +1298,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{CF_EQUITY_PROCEEDS_FROM_COMMON_STOCK} - {CF_REPURCHASES_OF_COMMON_SHARES} - {CF_DISTRIBUTIONS_TO_NON_CONTROLLING_INTEREST}
@@ -1318,7 +1318,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_NET_CHANGE_IN_CASH
@@ -1331,7 +1331,7 @@
   unit: USD
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: formula
   taxonomy_type: standard
   template: '{CF_NET_CASH_PROVIDED_BY_OPERATING_ACTIVITIES} + {CF_NET_CASH_USED_IN_INVESTING_ACTIVITIES}
@@ -1343,7 +1343,7 @@
   order: 510
   label: 'Cash and cash equivalents:'
   kind: header
-  status: proposed
+  status: approved
 - id: CF_BEGINNING
   tab: Hist_CF
   order: 520
@@ -1355,7 +1355,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_ENDING
@@ -1369,7 +1369,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: HDR_CF_SUPPLEMENTAL_DISCLOSURES_OF_CASH_FLOW_INFORMATION
@@ -1377,7 +1377,7 @@
   order: 540
   label: 'Supplemental Disclosures of Cash Flow Information:'
   kind: header
-  status: proposed
+  status: approved
 - id: CF_CASH_PAID_DURING_THE_YEAR_FOR_INTEREST
   tab: Hist_CF
   order: 550
@@ -1389,7 +1389,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: CF_CASH_PAID_DURING_THE_YEAR_FOR_INCOME_TAXES
@@ -1403,7 +1403,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: HDR_EQ_INCREASE_DECREASE_IN_STOCKHOLDERS_EQUITY_ROLL_FORWARD
@@ -1411,7 +1411,7 @@
   order: 100
   label: Increase (Decrease) in Stockholders' Equity [Roll Forward]
   kind: header
-  status: proposed
+  status: approved
 - id: EQ_STOCKHOLDERS_EQUITY_BEGINNING_BALANCE_IN_SHARES
   tab: Hist_EQ
   order: 110
@@ -1423,7 +1423,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_COMMON_STOCK_COMMON_STOCK_BEGINNING_BALANCE
@@ -1437,7 +1437,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
   kind: fact
@@ -1453,7 +1453,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_COMMON_STOCK_COMMON_STOCK_BEGINNING_BALANCE_2
@@ -1467,7 +1467,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
   kind: fact
@@ -1483,7 +1483,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:AdditionalPaidInCapitalMember
   kind: fact
@@ -1499,7 +1499,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:RetainedEarningsMember
   kind: fact
@@ -1515,7 +1515,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:AccumulatedOtherComprehensiveIncomeMember
   kind: fact
@@ -1531,7 +1531,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:TreasuryStockCommonMember
   kind: fact
@@ -1547,7 +1547,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_RETAINED_EARNINGS_RETAINED_EARNINGS
@@ -1561,7 +1561,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:RetainedEarningsMember
   kind: fact
@@ -1577,7 +1577,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_ACCUMULATED_OTHER_COMPREHENSIVE_INCOME_LOSS_ACCUMULATED_OTHE_2
@@ -1591,7 +1591,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:AccumulatedOtherComprehensiveIncomeMember
   kind: fact
@@ -1607,7 +1607,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_COMMON_STOCK_COMMON_STOCK
@@ -1621,7 +1621,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
   kind: fact
@@ -1637,7 +1637,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAID_IN_CAPITAL
@@ -1651,7 +1651,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:AdditionalPaidInCapitalMember
   kind: fact
@@ -1667,7 +1667,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_ADDITIONAL_PAID_IN_CAPITAL_ADDITIONAL_PAID_IN_CAPITAL_2
@@ -1681,7 +1681,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:AdditionalPaidInCapitalMember
   kind: fact
@@ -1697,7 +1697,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_COMMON_STOCK_COMMON_STOCK_2
@@ -1711,7 +1711,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
   kind: fact
@@ -1727,7 +1727,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_TREASURY_STOCK_TREASURY_STOCK
@@ -1741,7 +1741,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:TreasuryStockCommonMember
   kind: fact
@@ -1757,7 +1757,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_COMMON_STOCK_COMMON_STOCK_ENDING_BALANCE
@@ -1771,7 +1771,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
   kind: fact
@@ -1787,7 +1787,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_COMMON_STOCK_COMMON_STOCK_ENDING_BALANCE_2
@@ -1801,7 +1801,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:CommonStockMember
   kind: fact
@@ -1817,7 +1817,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:AdditionalPaidInCapitalMember
   kind: fact
@@ -1833,7 +1833,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:RetainedEarningsMember
   kind: fact
@@ -1849,7 +1849,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:AccumulatedOtherComprehensiveIncomeMember
   kind: fact
@@ -1865,7 +1865,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   dimensions:
     us-gaap:StatementEquityComponentsAxis: us-gaap:TreasuryStockCommonMember
   kind: fact
@@ -1875,7 +1875,7 @@
   order: 410
   label: Increase (Decrease) in Temporary Equity [Roll Forward]
   kind: header
-  status: proposed
+  status: approved
 - id: EQ_REDEEMABLE_CONVERTIBLE_PREFERRED_STOCK_BEGINNING_BALANCE
   tab: Hist_EQ
   order: 420
@@ -1887,7 +1887,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_NET_INCOME_ATTRIBUTABLE_TO_NON_CONTROLLING_INTEREST
@@ -1901,7 +1901,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_ACQUISITION_OF_NON_CONTROLLING_INTEREST
@@ -1915,7 +1915,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: custom
 - id: EQ_ADJUSTMENT_OF_NON_CONTROLLING_INTEREST_TO_REDEMPTION_VALUE
@@ -1929,7 +1929,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
 - id: EQ_DISTRIBUTIONS_TO_NON_CONTROLLING_INTEREST
@@ -1943,7 +1943,7 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: custom
 - id: EQ_REDEEMABLE_CONVERTIBLE_PREFERRED_STOCK_ENDING_BALANCE
@@ -1957,6 +1957,6 @@
   sign: 1
   required: true
   allow_missing: false
-  status: proposed
+  status: approved
   kind: fact
   taxonomy_type: standard
