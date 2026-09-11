@@ -26,6 +26,8 @@ FONT_COLOR = {
 }
 FILL_COLOR = {"human_input": {"red": 1.0, "green": 0.95, "blue": 0.6}}  # yellow
 
+E_ELIGIBLE_TABS = {"Hist_BS", "Hist_EQ"}  # spec Sec 9.6: column E is "BS/EQ only; blank on IS/CF"
+
 
 class WriteSetError(ValueError):
     pass
@@ -60,18 +62,17 @@ def build_write_set(
             raise WriteSetError(f"collision: {tab}!{a1} already targeted by another cell")
         write_set[key] = {"kind": kind, "value_or_formula": value_or_formula, "owner": owner}
 
-    # Column E is the opening-balance-sheet-only column (spec Sec 9.6): it only
-    # applies to tabs that actually carry an instant fact at that date (BS/EQ).
-    # A duration-only tab like Hist_IS/Hist_CF has no "opening year" activity to
-    # show there -- period_columns is shared/global across every tab, so this has
-    # to be filtered per tab rather than assumed. Missing this produced spurious
-    # "=E7-E8"-style formulas evaluating against blank cells (silently reading as
-    # 0) the first time this ran live.
-    tab_has_instant_line = any(
-        li.get("tab") == tab and li.get("status") == "approved" and li.get("period_type") == "instant"
-        for li in line_items
-    )
-    tab_period_columns = period_columns if tab_has_instant_line else {d: c for d, c in period_columns.items() if c != "E"}
+    # Column E is the opening-balance-sheet-only column, and spec Sec 9.6 is
+    # explicit that it is a per-TAB rule -- "BS/EQ only; blank on IS/CF" -- not
+    # something inferred per line. That matters specifically for Hist_CF's
+    # beginning/ending-cash lines: they're instant-typed facts (correctly, for
+    # Phase 3 selection), but the spec still wants them rendered on CF's normal
+    # F/G/H axis, never E (a per-line "is this an instant fact" rule would have
+    # incorrectly pulled them onto a 4th column CF was never meant to have).
+    # Duration-typed lines on an E-eligible tab (e.g. Hist_EQ's net-income-into-RE
+    # row) still end up blank at E on their own, simply because no duration fact
+    # exists at the opening instant -- no separate exclusion needed for those.
+    tab_period_columns = period_columns if tab in E_ELIGIBLE_TABS else {d: c for d, c in period_columns.items() if c != "E"}
 
     # header rows: period label/start/end/days/AE-flag, identical shape on every tab
     tab_curated = curated[curated["statement"] == tab.replace("Hist_", "")]
@@ -110,23 +111,125 @@ def build_write_set(
             # needs to become a targeted clear that skips them.
             continue
 
-        # A single tab (EQ especially) can mix instant- and duration-typed lines,
-        # so this is decided per line, not just per tab: a duration fact has no
-        # value for the opening-balance-sheet-only column.
-        line_period_columns = period_columns if li.get("period_type") == "instant" else tab_period_columns
-        for period_end, col in line_period_columns.items():
-            if kind == "formula":
+        for idx, (period_end, col) in enumerate(tab_period_columns.items()):
+            # spec Sec 10.1: Hist_CF's beginning-cash line is a fact for the
+            # earliest historical column and a formula (prior period's ending
+            # cash) for every column after that -- a per-cell, not per-line, kind.
+            effective_kind = "fact" if (kind == "fact_then_formula" and idx == 0) else kind
+
+            if effective_kind in ("formula", "fact_then_formula"):
                 formula = resolve_formula(li["template"], tab, col, layouts, active_letters)
                 fkind = "cross_tab_formula" if cell_kind(li["template"], tab) == "cross_tab" else "same_tab_formula"
                 put(f"{col}{row}", fkind, formula)
                 continue
 
-            match = curated[(curated["line_id"] == li["id"]) & (curated["period_end"] == period_end)]
+            lookup_period_end = period_end
+            if kind == "fact_then_formula" and idx == 0:
+                # "Beginning" at the earliest column means cash at the START of
+                # that fiscal year, i.e. the instant BEFORE this column's own
+                # end date -- not cash AT this column's own date (which is this
+                # same concept's *ending* balance for that year). CF_BEGINNING
+                # and CF_ENDING are the same underlying instant fact reused
+                # across two presentation rows (same subtlety as the
+                # begin/end-rollforward fix in validate.py), so looking this
+                # column's own date up here would silently return the ending
+                # balance instead. Look at the full (untrimmed-by-tab) period
+                # axis for the instant immediately prior.
+                all_dates = sorted(period_columns)
+                pos = all_dates.index(period_end)
+                if pos > 0:
+                    lookup_period_end = all_dates[pos - 1]
+
+            match = curated[(curated["line_id"] == li["id"]) & (curated["period_end"] == lookup_period_end)]
             if len(match) == 0:
                 continue  # allow_missing line, genuinely absent this period -- blank, not zero (R3/R1)
             value = _scale(li.get("unit", "USD"), float(match.iloc[0]["value"]), settings)
             put(f"{col}{row}", "fact", value)
 
+    return write_set
+
+
+SOURCES_COLUMNS = [
+    "line_id",
+    "tab",
+    "label",
+    "period_end",
+    "value_as_filed_unscaled",
+    "unit",
+    "concept",
+    "taxonomy_type",
+    "dimensions",
+    "accn",
+    "form",
+    "filed",
+    "source",
+    "recast_flag",
+    "raw_path",
+]
+STANDARD_TAXONOMY_PREFIXES = {"us-gaap", "dei", "srt", "ifrs-full"}
+
+
+def _taxonomy_type(concept: str) -> str:
+    prefix = concept.split(":", 1)[0]
+    return "standard" if prefix in STANDARD_TAXONOMY_PREFIXES else "custom"
+
+
+def build_sources_write_set(curated: pd.DataFrame, line_items: list[dict]) -> dict[tuple[str, str], dict]:
+    """Sources tab (spec Sec 10.4): one row per curated fact, rendered directly
+    from historicals.parquet -- never hand-typed. Not a period-column tab; a flat
+    table with its own header row.
+    """
+    tab = "Sources"
+    labels = {li["id"]: li.get("label", "") for li in line_items}
+    write_set: dict[tuple[str, str], dict] = {}
+
+    for col_idx, header in enumerate(SOURCES_COLUMNS):
+        col = chr(ord("A") + col_idx)
+        write_set[(tab, f"{col}1")] = {"kind": "header", "value_or_formula": header, "owner": "code"}
+
+    ordered = curated.sort_values(["statement", "line_id", "period_end"])
+    for row_idx, (_, r) in enumerate(ordered.iterrows(), start=2):
+        values = [
+            r["line_id"],
+            f"Hist_{r['statement']}",
+            labels.get(r["line_id"], ""),
+            r["period_end"],
+            float(r["value"]),
+            r["unit"],
+            r["concept"],
+            _taxonomy_type(r["concept"]),
+            r["dimensions"],
+            r["accn"],
+            r["form"],
+            r["filed"],
+            r["source"],
+            bool(r["recast_flag"]),
+            r["raw_path"],
+        ]
+        for col_idx, value in enumerate(values):
+            col = chr(ord("A") + col_idx)
+            write_set[(tab, f"{col}{row_idx}")] = {"kind": "fact", "value_or_formula": value, "owner": "code"}
+
+    return write_set
+
+
+def build_readme_write_set(run_id: str, target_sheet: str) -> dict[tuple[str, str], dict]:
+    """README tab (spec Sec 10.1): purpose, units, color key, last run ID, target
+    sheet, and (once Phase 5 exists) a link to CHK_MASTER."""
+    tab = "README"
+    lines = [
+        "SiteOne Landscape Supply, Inc. (NYSE: SITE) -- Three-Statement Model",
+        "",
+        "Purpose: verified historicals sourced from SEC EDGAR XBRL, rendered as live formulas with full provenance (see Sources tab).",
+        "Units: USD in millions unless noted; shares in millions; EPS in $/share.",
+        "Color key: blue = sourced fact | black = same-tab formula | green = cross-tab formula | yellow = human input.",
+        f"Last run ID: {run_id}",
+        f"Target sheet: {target_sheet}",
+        "Master check: pending Phase 5 (Checks tab not built yet).",
+    ]
+    write_set: dict[tuple[str, str], dict] = {}
+    for row_idx, text in enumerate(lines, start=1):
+        write_set[(tab, f"A{row_idx}")] = {"kind": "header" if row_idx == 1 else "fact", "value_or_formula": text, "owner": "code"}
     return write_set
 
 
@@ -147,24 +250,30 @@ class SheetsWriter:
         creds = Credentials.from_service_account_file(str(credentials_path), scopes=SCOPES)
         self.client = gspread.authorize(creds)
 
-    def ensure_tab(self, spreadsheet, tab: str):
+    def ensure_tab(self, spreadsheet, tab: str, rows: int, cols: int):
         try:
-            return spreadsheet.worksheet(tab)
+            ws = spreadsheet.worksheet(tab)
+            if ws.row_count < rows or ws.col_count < cols:
+                ws.resize(rows=max(ws.row_count, rows), cols=max(ws.col_count, cols))
+            return ws
         except gspread.WorksheetNotFound:
-            return spreadsheet.add_worksheet(title=tab, rows=200, cols=26)
+            return spreadsheet.add_worksheet(title=tab, rows=rows, cols=cols)
 
-    def clear_code_owned_range(self, worksheet, max_row: int) -> None:
-        worksheet.batch_clear([f"A1:H{max_row}"])
+    def clear_code_owned_range(self, worksheet, max_row: int, max_col: str = "H") -> None:
+        worksheet.batch_clear([f"A1:{max_col}{max_row}"])
 
     def write(self, spreadsheet_id: str, write_set: dict[tuple[str, str], dict]) -> None:
         spreadsheet = self.client.open_by_key(spreadsheet_id)
         tabs = sorted({tab for tab, _a1 in write_set})
         worksheets = {}
         for tab in tabs:
-            ws = self.ensure_tab(spreadsheet, tab)
+            tab_a1s = [a1 for (t, a1) in write_set if t == tab]
+            max_row = max(int("".join(c for c in a1 if c.isdigit())) for a1 in tab_a1s)
+            max_col_idx = max(_col_to_index(_col_letters(a1)) for a1 in tab_a1s)
+            max_col = _index_to_col(max(max_col_idx, _col_to_index("H")))
+            ws = self.ensure_tab(spreadsheet, tab, rows=max(200, max_row + 10), cols=max(26, max_col_idx + 5))
             worksheets[tab] = ws
-            max_row = max(int("".join(c for c in a1 if c.isdigit())) for (t, a1) in write_set if t == tab)
-            self.clear_code_owned_range(ws, max_row)
+            self.clear_code_owned_range(ws, max_row, max_col)
 
         value_data = []
         format_requests = []
@@ -209,11 +318,24 @@ class SheetsWriter:
         spreadsheet.batch_update({"requests": freeze_requests})
 
 
+def _col_letters(a1: str) -> str:
+    return "".join(c for c in a1 if c.isalpha())
+
+
 def _col_to_index(col: str) -> int:
     idx = 0
     for ch in col:
         idx = idx * 26 + (ord(ch) - ord("A") + 1)
     return idx - 1
+
+
+def _index_to_col(idx: int) -> str:
+    idx += 1
+    letters = ""
+    while idx > 0:
+        idx, rem = divmod(idx - 1, 26)
+        letters = chr(ord("A") + rem) + letters
+    return letters
 
 
 def _a1_to_grid_range(sheet_id: int, a1: str) -> dict:

@@ -22,7 +22,13 @@ from site3sm.edgar_client import EdgarClient
 from site3sm.extract import run_extract
 from site3sm.layout import TabLayout, build_period_columns
 from site3sm.select_facts import determine_target_periods, run_select
-from site3sm.sheets_writer import SheetsWriter, build_write_set, write_dry_run
+from site3sm.sheets_writer import (
+    SheetsWriter,
+    build_readme_write_set,
+    build_sources_write_set,
+    build_write_set,
+    write_dry_run,
+)
 from site3sm.validate import run_validate_and_report
 from site3sm.verify import run_verify
 
@@ -234,14 +240,19 @@ def cmd_build(args: argparse.Namespace) -> None:
     settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
     line_items, curated, layouts, period_columns, active_letters, _duration_ends = _build_context(settings)
 
+    target_sheet = "prod" if args.promote else "scratch"
     tabs = [t.strip() for t in args.tabs.split(",")] if args.tabs else sorted(layouts)
     write_set: dict = {}
     for tab in tabs:
-        write_set.update(
-            build_write_set(tab, line_items, curated, layouts, period_columns, active_letters, settings)
-        )
-
-    target_sheet = "prod" if args.promote else "scratch"
+        if tab == "Sources":
+            write_set.update(build_sources_write_set(curated, line_items))
+        elif tab == "README":
+            run_id = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+            write_set.update(build_readme_write_set(run_id, target_sheet))
+        else:
+            write_set.update(
+                build_write_set(tab, line_items, curated, layouts, period_columns, active_letters, settings)
+            )
 
     if args.dry_run:
         plan_path = write_dry_run(write_set, REPO_ROOT / "reports")
@@ -272,12 +283,18 @@ def cmd_verify(args: argparse.Namespace) -> None:
     settings = load_settings(REPO_ROOT / "config" / "settings.yaml")
     line_items, curated, layouts, period_columns, active_letters, _duration_ends = _build_context(settings)
 
-    tabs = sorted(layouts)
+    # README is excluded: its content (last run ID) is a snapshot of whatever build
+    # run wrote it, not a deterministic function of the data -- re-verifying it
+    # would just compare against a freshly-generated, different run ID every time.
+    tabs = sorted(layouts) + ["Sources"]
     write_set: dict = {}
     for tab in tabs:
-        write_set.update(
-            build_write_set(tab, line_items, curated, layouts, period_columns, active_letters, settings)
-        )
+        if tab == "Sources":
+            write_set.update(build_sources_write_set(curated, line_items))
+        else:
+            write_set.update(
+                build_write_set(tab, line_items, curated, layouts, period_columns, active_letters, settings)
+            )
 
     target_sheet = "prod" if args.promote else "scratch"
     sheet_id = os.environ["SHEET_ID_PROD"] if args.promote else os.environ["SHEET_ID_SCRATCH"]

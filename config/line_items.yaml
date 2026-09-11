@@ -1354,8 +1354,9 @@
   required: true
   allow_missing: false
   status: approved
-  kind: fact
+  kind: fact_then_formula
   taxonomy_type: standard
+  template: '{CF_ENDING@prev}'
 - id: CF_ENDING
   tab: Hist_CF
   order: 530
