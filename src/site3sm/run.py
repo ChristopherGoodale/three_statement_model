@@ -407,8 +407,19 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _resolve_credentials_path() -> None:
+    # keys/ sits next to the repos on every machine, so a relative path in .env
+    # (or no value at all) works on both Windows and macOS.
+    raw = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    path = pathlib.Path(raw) if raw else REPO_ROOT.parent / "keys" / "personal_google_service_account.json"
+    if not path.is_absolute():
+        path = REPO_ROOT / path
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(path.resolve())
+
+
 def main(argv: list[str] | None = None) -> None:
     load_dotenv(REPO_ROOT / ".env")
+    _resolve_credentials_path()
     parser = build_parser()
     args = parser.parse_args(argv)
     args.func(args)
